@@ -1,0 +1,60 @@
+name: test
+on:
+  push:
+  schedule: [{ cron: "0 9 * * *" }]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version-file: .tool-versions }
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      - uses: actions/cache@v6
+        with: { path: node_modules/.astro/assets, key: "astro-${{ hashFiles('src/**') }}", restore-keys: astro- }
+      - run: pnpm test
+        env: { GITHUB_TOKEN: "${{ github.token }}" }
+  e2e:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.63.0-noble
+    strategy:
+      fail-fast: false
+      matrix: { project: [chromium, firefox, webkit, mobile-chromium, mobile-webkit] }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version-file: .tool-versions }
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/cache/restore@v6
+        with: { path: node_modules/.astro/assets, key: "astro-${{ hashFiles('src/**') }}", restore-keys: astro- }
+      - run: pnpm build
+        env: { GITHUB_TOKEN: "${{ github.token }}" }
+      - run: pnpm test:e2e --project ${{ matrix.project }}
+        env: { HOME: /root }
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with: { name: "playwright-report-${{ matrix.project }}", path: playwright-report }
+  lighthouse:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: { page: [index, es, work/exa, cv] }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version-file: .tool-versions }
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      - uses: actions/cache/restore@v6
+        with: { path: node_modules/.astro/assets, key: "astro-${{ hashFiles('src/**') }}", restore-keys: astro- }
+      - run: pnpm build
+        env: { GITHUB_TOKEN: "${{ github.token }}" }
+      - run: pnpm test:lighthouse --collect.url=http://localhost/${{ matrix.page }}.html
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with: { name: "lighthouse-${{ strategy.job-index }}", path: .lighthouseci, include-hidden-files: true }
