@@ -1,0 +1,88 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import translations from "../i18n/translations";
+import Monogram from "../monogram/Monogram.astro";
+
+type Props = { alternate: { href: string; locale: string; name: string } };
+
+const t = translations(Astro.currentLocale);
+const home = getRelativeLocaleUrl(Astro.currentLocale ?? "en");
+---
+
+<header>
+  <a class="home" href={home} aria-label={t("Guillermo Diéguez, home")}>
+    <Monogram />
+  </a>
+  <nav aria-label={t("Primary")}>
+    <ul role="list">
+      <li>
+        <a class="link label" href={`${home}#work`}>
+          {t("Work")}
+        </a>
+      </li>
+      <li>
+        <a class="link label" href={`${home}#about`}>
+          {t("About")}
+        </a>
+      </li>
+      <li>
+        <a class="link label" href={`${home}#contact`}>
+          {t("Contact")}
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <a
+    class="link label"
+    href={Astro.props.alternate.href}
+    hreflang={Astro.props.alternate.locale}
+    lang={Astro.props.alternate.locale}
+    aria-label={Astro.props.alternate.name}
+  >
+    {Astro.props.alternate.locale}
+  </a>
+</header>
+
+<style>
+  header {
+    --spacing: clamp(0.75rem, 0.25rem + 2.5vw, 2rem);
+
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    height: var(--header);
+    padding-inline: var(--inset);
+    background: var(--grain), var(--bg);
+    border-bottom: 1px solid var(--line);
+    view-transition-name: header;
+  }
+
+  .home {
+    display: grid;
+    flex: none;
+    place-items: center;
+    min-height: 44px;
+    margin-inline-end: auto;
+  }
+
+  ul {
+    display: flex;
+    gap: var(--spacing);
+  }
+
+  a.label {
+    display: inline-grid;
+    place-items: center;
+    min-height: 44px;
+  }
+
+  @media print {
+    header {
+      display: none;
+    }
+  }
+</style>

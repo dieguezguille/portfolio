@@ -1,0 +1,20 @@
+---
+import monogram from "./monogram";
+---
+
+<svg viewBox={monogram.viewBox} shape-rendering="crispEdges" aria-hidden="true">
+  <path d={monogram.letters}></path>
+  <path class="dot" d={monogram.dot}></path>
+</svg>
+
+<style>
+  svg {
+    width: 39px;
+    height: 21px;
+    fill: currentColor;
+  }
+
+  .dot {
+    fill: var(--accent);
+  }
+</style>

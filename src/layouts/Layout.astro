@@ -1,0 +1,90 @@
+---
+import "../styles/reset.css";
+import "../styles/tokens.css";
+import "../styles/base.css";
+
+import { Font } from "astro:assets";
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import Footer from "../footer/Footer.astro";
+import Header from "../header/Header.astro";
+import translations from "../i18n/translations";
+import palette from "../styles/palette";
+
+type Props = {
+  description: string;
+  noindex?: boolean;
+  schema?: Record<string, unknown>;
+  title: string;
+  type?: "article" | "website";
+};
+
+const t = translations(Astro.currentLocale);
+const pathname = Astro.url.pathname.replace(/(?:\/index)?\.html$/, "") || "/";
+const path = pathname.replace(/^\/es(?=\/|$)/, "") || "/";
+const canonical = new URL(pathname, Astro.site).href;
+const alternate = Astro.currentLocale === "es" ? "en" : "es";
+const url = (code: string) => new URL(getRelativeLocaleUrl(code, path), Astro.site).href;
+const switcher = {
+  href: getRelativeLocaleUrl(alternate, path),
+  locale: alternate,
+  name: alternate === "es" ? "Español" : "English",
+};
+---
+
+<!doctype html>
+<html lang={Astro.currentLocale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{Astro.props.title}</title>
+    <meta name="description" content={Astro.props.description} />
+    {Astro.props.noindex ? (
+      <meta name="robots" content="noindex" />
+    ) : (
+      <>
+        <link rel="canonical" href={canonical} />
+        <link rel="alternate" hreflang="en" href={url("en")} />
+        <link rel="alternate" hreflang="es" href={url("es")} />
+        <link rel="alternate" hreflang="x-default" href={url("en")} />
+      </>
+    )}
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content={palette.bg} media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content={palette.light.bg} media="(prefers-color-scheme: light)" />
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-mono" />
+  </head>
+  <body>
+    <a class="skip" href="#main">
+      {t("Skip to content")}
+    </a>
+    <Header alternate={switcher} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: fixed;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 100;
+    padding: 0.75rem 1rem;
+    background: var(--fg);
+    color: var(--bg);
+    font-weight: 500;
+    transform: translateY(-200%);
+
+    &:focus {
+      transform: none;
+    }
+
+    @media print {
+      display: none;
+    }
+  }
+</style>

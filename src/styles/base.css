@@ -1,0 +1,162 @@
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
+::view-transition-group(*) {
+  animation-duration: var(--medium);
+  animation-timing-function: var(--ease);
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 100%;
+    line-height: 1.5;
+    scroll-padding-top: calc(var(--header) + 1rem);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    @media (prefers-reduced-motion: no-preference) {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    font-size: var(--step-0);
+    background-image: var(--grain);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  code,
+  kbd,
+  time,
+  data {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  code {
+    text-transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer layout {
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+    column-gap: var(--gutter);
+    padding-inline: var(--inset);
+  }
+
+  .label {
+    font-family: var(--mono);
+    font-size: var(--step--2);
+    font-weight: 450;
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  .link {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 -0.125em;
+      height: 1px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform var(--medium) var(--ease);
+    }
+
+    &:hover::after,
+    &:focus-visible::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+  }
+
+  .reveal {
+    @media (prefers-reduced-motion: no-preference) {
+      @supports (animation-timeline: view()) {
+        animation: reveal var(--ease) both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 70%;
+      }
+    }
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  html {
+    background: #fff;
+    color: #000;
+  }
+
+  body {
+    background: none;
+  }
+
+  a {
+    color: inherit;
+  }
+}

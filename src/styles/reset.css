@@ -1,0 +1,66 @@
+@layer reset, base, layout;
+
+@layer reset {
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+    hanging-punctuation: first last;
+  }
+
+  body {
+    min-height: 100svh;
+  }
+
+  img,
+  svg,
+  canvas,
+  picture {
+    display: block;
+    max-width: 100%;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+
+  ul,
+  ol {
+    list-style: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font: inherit;
+    text-wrap: balance;
+  }
+
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+}
