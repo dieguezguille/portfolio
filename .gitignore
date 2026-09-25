@@ -1,0 +1,11 @@
+.DS_Store
+.astro/
+.env
+.lighthouseci/
+.wrangler/
+blob-report/
+coverage/
+dist/
+node_modules/
+playwright-report/
+test-results/

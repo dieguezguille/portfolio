@@ -1,0 +1,6 @@
+#!/bin/sh
+[ "$CI" ] && exit 0
+[ -d "$(git rev-parse --git-path rebase-merge)" ] && exit 0
+[ -d "$(git rev-parse --git-path rebase-apply)" ] && exit 0
+
+pnpm test:ts && pnpm test:eslint && exec pnpm test:prettier
