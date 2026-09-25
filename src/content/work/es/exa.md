@@ -20,6 +20,19 @@ metrics:
     stat: pulls
   - label: Releases móviles desde noviembre de 2024
     stat: releases
+screens:
+  - image: ../../../assets/exa/home.png
+    alt: El inicio de Exa App, con el saldo del portfolio, las acciones para depositar, enviar, hacer swaps y pedir préstamos, y el modo de pago de la tarjeta en pagar ahora.
+    caption: Inicio
+  - image: ../../../assets/exa/swap.png
+    alt: Un swap de ETH a EXA, con el monto de cada lado, el tipo de cambio, el costo de red, la comisión y el slippage máximo.
+    caption: Swap
+  - image: ../../../assets/exa/swap-successful.png
+    alt: La confirmación de un swap exitoso por US$200.
+    caption: Swap completado
+  - image: ../../../assets/exa/stocks.png
+    alt: La bienvenida a las acciones tokenizadas, que invita a invertir en empresas conocidas, como Tesla, Apple y Meta.
+    caption: Acciones tokenizadas
 job: exa-labs
 ---
 

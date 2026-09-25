@@ -9,6 +9,13 @@ period:
 stack: [Unity, C#]
 links:
   live: https://es.ruvibet.com
+screens:
+  - image: ../../../assets/ruvibet/aymara-es.jpg
+    alt: Aymara en modo demo, con una grilla de cinco por tres símbolos de piedra en un templo en la selva y los controles de apuesta abajo.
+    caption: Aymara
+  - image: ../../../assets/ruvibet/aliens-and-fruits-es.jpg
+    alt: Aliens and Fruits en modo demo, con una grilla de cinco por tres de alienígenas y frutas sobre una calle de ciudad y los controles de apuesta abajo.
+    caption: Aliens and Fruits
 job: onebittech
 ---
 

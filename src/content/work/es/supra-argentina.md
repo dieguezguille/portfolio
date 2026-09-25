@@ -9,11 +9,24 @@ role: Único desarrollador
 period:
   start: "2026-03"
 stack: [Next.js, TypeScript, Supabase, Postgres, Drizzle, shadcn/ui, TanStack Table, Valibot, Sentry]
+screens:
+  - image: ../../../assets/supra/pos-origin.png
+    alt: El primer paso del punto de venta en una tableta, con una barra de progreso y los lugares de donde sale el material, agrupados en obras, el depósito y sus secciones.
+    caption: "Punto de venta: origen"
+  - image: ../../../assets/supra/pos-items.png
+    alt: El paso de ítems del punto de venta, que solo lista los materiales con stock en el origen elegido, con fotos, categorías y un buscador.
+    caption: "Punto de venta: ítems"
+  - image: ../../../assets/supra/orders.png
+    alt: La lista de pedidos del panel de escritorio, con número, fecha, ubicación, cantidad de ítems, estado y solicitante, y filtros por estado, ubicación y fecha.
+    caption: Pedidos
+  - image: ../../../assets/supra/movement.png
+    alt: El comprobante de un movimiento del depósito a una obra, con la fecha, el operario, el origen, el destino y los materiales movidos.
+    caption: Comprobante de un movimiento
 ---
 
 ## Contexto
 
-Supra Argentina es una constructora. Sus materiales se mueven entre depósitos y obras, y los jefes de obra piden lo que cada obra necesita. Desde marzo de 2026 soy el único desarrollador del sistema que registra todo eso: inventario, movimientos, pedidos, compras directas y permisos.
+Supra Argentina es una constructora. Sus materiales se mueven entre depósitos y obras, y los jefes de obra piden lo que cada obra necesita. Desde marzo de 2026 soy el único desarrollador del sistema que registra todo eso: inventario, movimientos, pedidos, compras directas y permisos. Las capturas de arriba reemplazan los nombres de personas, proveedores, obras y depósitos por genéricos.
 
 ## Problema
 

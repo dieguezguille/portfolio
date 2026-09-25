@@ -9,11 +9,24 @@ role: Sole developer
 period:
   start: "2026-03"
 stack: [Next.js, TypeScript, Supabase, Postgres, Drizzle, shadcn/ui, TanStack Table, Valibot, Sentry]
+screens:
+  - image: ../../../assets/supra/pos-origin.png
+    alt: The first step of the point of sale on a tablet, with a progress bar and the locations to take material from, grouped into building sites, the warehouse and its sections.
+    caption: "Point of sale: origin"
+  - image: ../../../assets/supra/pos-items.png
+    alt: The items step of the point of sale, which lists only the materials with stock at the chosen origin, with photos, categories and a search box.
+    caption: "Point of sale: items"
+  - image: ../../../assets/supra/orders.png
+    alt: The orders list in the desktop panel, with number, date, location, item count, state and requester, and filters by state, location and date.
+    caption: Orders
+  - image: ../../../assets/supra/movement.png
+    alt: The ticket of a movement from the warehouse to a building site, with the date, the operator, the origin, the destination and the materials moved.
+    caption: Movement ticket
 ---
 
 ## Context
 
-Supra Argentina is a construction company. Its materials move between warehouses and building sites, and site managers order what each site needs. Since March 2026 I have been the sole developer of the system that records all of it: inventory, movements, orders, direct purchases and permissions.
+Supra Argentina is a construction company. Its materials move between warehouses and building sites, and site managers order what each site needs. Since March 2026 I have been the sole developer of the system that records all of it: inventory, movements, orders, direct purchases and permissions. The screens above replace the names of people, suppliers, sites and warehouses with generic ones.
 
 ## Problem
 
