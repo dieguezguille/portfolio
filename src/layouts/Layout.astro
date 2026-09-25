@@ -8,7 +8,9 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 
 import Footer from "../footer/Footer.astro";
 import Header from "../header/Header.astro";
+import region from "../i18n/region";
 import translations from "../i18n/translations";
+import profile from "../profile";
 import palette from "../styles/palette";
 
 type Props = {
@@ -52,8 +54,33 @@ const switcher = {
     <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content={palette.bg} media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content={palette.light.bg} media="(prefers-color-scheme: light)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta property="og:type" content={Astro.props.type ?? "website"} />
+    <meta property="og:site_name" content={profile.name} />
+    <meta property="og:title" content={Astro.props.title} />
+    <meta property="og:description" content={Astro.props.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(`/og${pathname === "/" ? "/index" : pathname}.png`, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={Astro.props.title} />
+    <meta property="og:locale" content={region(Astro.currentLocale).replace("-", "_")} />
+    <meta property="og:locale:alternate" content={region(alternate).replace("-", "_")} />
+    <meta name="twitter:card" content="summary_large_image" />
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-mono" />
+    {Astro.props.schema && (
+      <script
+        is:inline
+        type="application/ld+json"
+        set:html={JSON.stringify({ "@context": "https://schema.org", ...Astro.props.schema }).replaceAll(
+          "<",
+          String.raw`\u003c`,
+        )}
+      ></script>
+    )}
   </head>
   <body>
     <a class="skip" href="#main">
