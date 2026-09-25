@@ -42,6 +42,16 @@ const home = getRelativeLocaleUrl(Astro.currentLocale ?? "en");
   >
     {Astro.props.alternate.locale}
   </a>
+  <button
+    class="palette label"
+    type="button"
+    aria-haspopup="dialog"
+    aria-keyshortcuts="Meta+K Control+K"
+    data-palette-trigger
+  >
+    <span class="visually-hidden">{t("Command menu")}</span>
+    <kbd>⌘K</kbd>
+  </button>
 </header>
 
 <style>
@@ -78,6 +88,23 @@ const home = getRelativeLocaleUrl(Astro.currentLocale ?? "en");
     display: inline-grid;
     place-items: center;
     min-height: 44px;
+  }
+
+  .palette {
+    width: 4.5rem;
+    min-height: 28px;
+    padding-inline: 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--muted);
+
+    &:hover {
+      color: var(--fg);
+    }
+
+    @media (scripting: none), (width < 30rem) {
+      display: none;
+    }
   }
 
   @media print {

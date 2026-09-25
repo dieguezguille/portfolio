@@ -1,0 +1,246 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import translations from "../i18n/translations";
+import profile from "../profile";
+import studies from "../work/studies";
+
+type Props = { alternate: { href: string; name: string } };
+
+const t = translations(Astro.currentLocale);
+const locale = Astro.currentLocale ?? "en";
+const home = getRelativeLocaleUrl(locale);
+const entries = await studies(locale);
+const groups = [
+  {
+    name: t("Go to"),
+    items: [
+      { label: t("Selected work"), href: `${home}#work` },
+      { label: t("Experience"), href: `${home}#about` },
+      { label: t("Capabilities"), href: `${home}#capabilities` },
+      { label: t("Contributions"), href: `${home}#contributions` },
+      { label: t("Contact"), href: `${home}#contact` },
+      ...entries.map((entry) => ({
+        label: `${t("Case study")}: ${entry.data.title}`,
+        href: getRelativeLocaleUrl(locale, `work/${entry.slug}`),
+      })),
+    ],
+  },
+  {
+    name: t("Actions"),
+    items: [
+      { label: t("Copy email"), action: "copy" },
+      { label: t("Open CV"), href: getRelativeLocaleUrl(locale, "cv") },
+      { label: `${t("Switch to")} ${Astro.props.alternate.name}`, href: Astro.props.alternate.href },
+      { label: t("View source"), href: profile.source },
+    ],
+  },
+  {
+    name: t("System"),
+    items: [
+      { label: t("Toggle grid overlay"), action: "grid", key: "G" },
+      { label: t("Toggle diagnostics"), action: "lattice:diagnostics" },
+      { label: t("Toggle hash mode"), action: "lattice:hash" },
+      { label: t("Pause or resume motion"), action: "lattice:motion" },
+    ],
+  },
+];
+---
+
+<dialog
+  aria-label={t("Command menu")}
+  data-palette
+  data-results={t("Results: {{count}}")}
+  data-copied={t("Email copied to the clipboard")}
+  data-email={profile.email}
+>
+  <input
+    type="text"
+    role="combobox"
+    aria-label={t("Command menu")}
+    aria-expanded="true"
+    aria-controls="palette-options"
+    aria-autocomplete="list"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder={t("Type a command or search")}
+  />
+  <div id="palette-options" class="options" role="listbox" aria-label={t("Command menu")}>
+    {groups.map((group, index) => (
+      <div role="group" aria-label={group.name}>
+        <p class="label muted" aria-hidden="true">
+          {group.name}
+        </p>
+        {group.items.map((item, position) => (
+          <div
+            id={`palette-${index}-${position}`}
+            role="option"
+            aria-selected="false"
+            data-href={"href" in item ? item.href : undefined}
+            data-action={"action" in item ? item.action : undefined}
+          >
+            {item.label}
+            {"key" in item && <kbd>{item.key}</kbd>}
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>
+  <p class="status label muted" role="status">
+    {t("Arrows to move, Enter to select, Esc to close")}
+  </p>
+</dialog>
+
+<div class="overlay grid" aria-hidden="true">
+  {Array.from({ length: 12 }, () => (
+    <span />
+  ))}
+</div>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>("[data-palette]");
+  const trigger = document.querySelector("[data-palette-trigger]");
+  const open = () => {
+    if (!dialog) return;
+    void import("./palette").then((module) => {
+      module.default(dialog);
+    });
+  };
+
+  addEventListener("keydown", (event) => {
+    const target = event.target;
+    const isTyping =
+      target instanceof HTMLElement && (target.isContentEditable || target.matches("input, textarea, select"));
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      open();
+    } else if (!isTyping && event.key === "g" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      document.documentElement.toggleAttribute("data-grid");
+    }
+  });
+  trigger?.addEventListener("click", open);
+  const hint = trigger?.querySelector("kbd");
+  if (hint && !/mac|iphone|ipad/i.test(navigator.userAgent)) hint.textContent = "Ctrl K";
+</script>
+
+<style>
+  dialog {
+    width: min(38rem, 100% - 2 * var(--margin));
+    max-height: min(32rem, 100svh - 8rem);
+    margin: 12svh auto auto;
+    padding: 0;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--fg);
+
+    &[open] {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--bg) 72%, transparent);
+    }
+  }
+
+  input {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: var(--step-0);
+
+    &::placeholder {
+      color: var(--muted);
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  .options {
+    overflow-y: auto;
+    padding-block: 0.5rem;
+    overscroll-behavior: contain;
+  }
+
+  [role="group"] {
+    padding-block: 0.25rem;
+
+    &[hidden] {
+      display: none;
+    }
+
+    p {
+      padding: 0.5rem 1.25rem 0.25rem;
+    }
+  }
+
+  [role="option"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2.75rem;
+    padding-inline: 1.25rem;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+
+    &[hidden] {
+      display: none;
+    }
+
+    &[aria-selected="true"] {
+      background: var(--bg);
+      border-left-color: var(--accent);
+    }
+
+    kbd {
+      padding: 0.1rem 0.4rem;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      color: var(--muted);
+      font-size: var(--step--2);
+    }
+  }
+
+  .status {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: none;
+    pointer-events: none;
+
+    :global(html[data-grid]) & {
+      display: grid;
+    }
+
+    span {
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      border-inline: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+
+    span:nth-child(n + 5) {
+      display: none;
+
+      @media (width >= 40rem) {
+        display: block;
+      }
+    }
+
+    span:nth-child(n + 9) {
+      @media (width < 64rem) {
+        display: none;
+      }
+    }
+  }
+</style>

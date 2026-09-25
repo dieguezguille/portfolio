@@ -10,6 +10,7 @@ import Footer from "../footer/Footer.astro";
 import Header from "../header/Header.astro";
 import region from "../i18n/region";
 import translations from "../i18n/translations";
+import Palette from "../palette/Palette.astro";
 import profile from "../profile";
 import palette from "../styles/palette";
 
@@ -91,6 +92,7 @@ const switcher = {
       <slot />
     </main>
     <Footer />
+    <Palette alternate={switcher} />
   </body>
 </html>
 
