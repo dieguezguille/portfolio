@@ -1,0 +1,37 @@
+name: deploy
+on:
+  workflow_run:
+    workflows: [test]
+    types: [completed]
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@v7
+        with: { ref: "${{ github.event.workflow_run.head_sha }}" }
+      - uses: actions/setup-node@v7
+        with: { node-version-file: .tool-versions }
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      - uses: actions/cache/restore@v6
+        with: { path: node_modules/.astro/assets, key: "astro-${{ hashFiles('src/**') }}", restore-keys: astro- }
+      - run: pnpm build
+        env: { GITHUB_TOKEN: "${{ github.token }}" }
+      - id: target
+        env: { BRANCH: "${{ github.event.workflow_run.head_branch }}" }
+        run: |
+          if [ "$BRANCH" = main ]; then
+            echo "command=deploy" >> "$GITHUB_OUTPUT"
+          else
+            alias=$(printf 'preview-%s' "$BRANCH" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-' | cut -c1-40 | sed 's/-*$//')
+            echo "command=versions upload --preview-alias $alias" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          packageManager: pnpm
+          command: ${{ steps.target.outputs.command }}
