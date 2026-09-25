@@ -1,6 +1,8 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 
+import markdown from "../agents/markdown";
+import jobs from "../experience/jobs";
 import translations from "../i18n/translations";
 import profile from "../profile";
 import studies from "../work/studies";
@@ -53,9 +55,51 @@ const groups = [
       { label: t("Toggle diagnostics"), action: "lattice:diagnostics" },
       { label: t("Toggle hash mode"), action: "lattice:hash" },
       { label: t("Pause or resume motion"), action: "lattice:motion" },
+      { label: t("Open terminal"), action: "terminal" },
     ],
   },
 ];
+const roles = await jobs(locale);
+const session = {
+  help: [
+    ["help", t("List the commands")],
+    ["whoami", t("Who I am")],
+    ["ls", t("List the pages")],
+    ["cat <page>", t("Print a page as markdown")],
+    ["open <page>", t("Open a page")],
+    ["git log", t("My career, as a git log")],
+    ["clear", t("Clear the screen")],
+    ["exit", t("Close the terminal")],
+  ],
+  log: roles.flatMap((job) =>
+    (job.data.previous
+      ? [
+          [job.data.previous.end, job.data.role],
+          [job.data.period.start, job.data.previous.role],
+        ]
+      : [[job.data.period.start, job.data.role]]
+    ).map(([month, role]) => `* ${month ?? ""}  ${role ?? ""}, ${job.data.company}`),
+  ),
+  messages: {
+    command: t("Command not found: {{command}}. Type help."),
+    hint: t("Type help and press Enter"),
+    page: t("No such page: {{page}}. Type ls."),
+    sudo: t("Nice try. Email me instead: {{email}}").replace("{{email}}", () => profile.email),
+  },
+  pages: [
+    { name: "index", path: undefined },
+    { name: "cv", path: "cv" },
+    ...entries.map((entry) => ({ name: `work/${entry.slug}`, path: `work/${entry.slug}` })),
+  ].map((page) => {
+    const href = getRelativeLocaleUrl(locale, page.path);
+    return { name: page.name, href, markdown: markdown(href) };
+  }),
+  whoami: [
+    profile.name,
+    `${t("Head of frontend at")} ${profile.employer.name}`,
+    t("My team and I build the Exa App, a self-custodial wallet with a Visa card, for iOS, Android and the web."),
+  ],
+};
 ---
 
 <dialog
@@ -99,6 +143,13 @@ const groups = [
       </div>
     ))}
   </div>
+  <pre class="terminal" role="log" hidden></pre>
+  <script
+    is:inline
+    type="application/json"
+    data-terminal
+    set:html={JSON.stringify(session).replaceAll("<", String.raw`\u003c`)}
+  ></script>
   <p class="status label muted" role="status">
     {t("Arrows to move, Enter to select, Esc to close")}
   </p>
@@ -218,6 +269,22 @@ const groups = [
       border-radius: 2px;
       color: var(--muted);
       font-size: var(--step--2);
+    }
+  }
+
+  .terminal {
+    overflow-y: auto;
+    margin: 0;
+    padding: 0.75rem 1.25rem;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    overscroll-behavior: contain;
+
+    :global(.prompt) {
+      color: var(--accent);
     }
   }
 

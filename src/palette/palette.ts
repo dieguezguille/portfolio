@@ -1,11 +1,17 @@
 import copy from "../agents/copy";
+import terminal, { type Session } from "./terminal";
 
 const wired = new WeakSet<HTMLDialogElement>();
 
 export default function palette(dialog: HTMLDialogElement) {
   const input = dialog.querySelector("input");
   const status = dialog.querySelector("[role=status]");
-  if (!input || !status) return;
+  const listbox = dialog.querySelector<HTMLElement>("[role=listbox]");
+  const output = dialog.querySelector<HTMLElement>("[role=log]");
+  if (!input || !status || !listbox || !output) return;
+  const session = JSON.parse(dialog.querySelector("[data-terminal]")?.textContent ?? "{}") as Session;
+  const history: string[] = [];
+  let back = 0;
   const options = [...dialog.querySelectorAll<HTMLElement>("[role=option]")];
   const hint = status.textContent;
   const visible = () => options.filter((option) => !option.hidden);
@@ -19,6 +25,15 @@ export default function palette(dialog: HTMLDialogElement) {
     }
   };
   const filter = () => {
+    const isTerminal = input.value.startsWith(">");
+    listbox.hidden = isTerminal;
+    output.hidden = !isTerminal;
+    input.setAttribute("aria-expanded", String(!isTerminal));
+    if (isTerminal) {
+      select();
+      status.textContent = session.messages.hint;
+      return;
+    }
     const query = input.value.trim().toLowerCase();
     const hasScene = document.querySelector("[data-lattice][data-ready]") !== null;
     for (const option of options) {
@@ -46,10 +61,40 @@ export default function palette(dialog: HTMLDialogElement) {
       status.textContent = dialog.dataset.exported ?? "";
       return;
     }
+    if (action === "terminal") {
+      input.value = "> ";
+      filter();
+      return;
+    }
     dialog.close();
     if (href) location.assign(href);
     else if (action === "grid") document.documentElement.toggleAttribute("data-grid");
     else if (action) document.dispatchEvent(new Event(action));
+  };
+
+  const submit = async () => {
+    const line = input.value.slice(1).trim();
+    input.value = "> ";
+    if (line) history.push(line);
+    back = history.length;
+    const result = await terminal(line, session, async (url) => {
+      const response = await fetch(url);
+      return response.text();
+    });
+    if ("clear" in result) {
+      output.replaceChildren();
+    } else if ("exit" in result) {
+      dialog.close();
+    } else if ("href" in result) {
+      dialog.close();
+      location.assign(result.href);
+    } else {
+      const prompt = document.createElement("span");
+      prompt.className = "prompt";
+      prompt.textContent = `> ${line}\n`;
+      output.append(prompt, `${result.lines.join("\n").trimEnd()}\n\n`);
+      output.scrollTop = output.scrollHeight;
+    }
   };
 
   if (!wired.has(dialog)) {
@@ -63,6 +108,17 @@ export default function palette(dialog: HTMLDialogElement) {
     });
     input.addEventListener("input", filter);
     input.addEventListener("keydown", (event) => {
+      if (input.value.startsWith(">")) {
+        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+          event.preventDefault();
+          back = Math.min(history.length, Math.max(0, back + (event.key === "ArrowUp" ? -1 : 1)));
+          input.value = `> ${history[back] ?? ""}`;
+        } else if (event.key === "Enter") {
+          event.preventDefault();
+          void submit();
+        }
+        return;
+      }
       const results = visible();
       const current = results.findIndex((option) => option.getAttribute("aria-selected") === "true");
       if (event.key === "ArrowDown" || event.key === "ArrowUp") {
