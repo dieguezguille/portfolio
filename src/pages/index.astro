@@ -1,0 +1,59 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import capabilities from "../capabilities/capabilities";
+import Capabilities from "../capabilities/Capabilities.astro";
+import Contact from "../contact/Contact.astro";
+import Contributions from "../contributions/Contributions.astro";
+import Experience from "../experience/Experience.astro";
+import build from "../footer/build";
+import Hero from "../hero/Hero.astro";
+import translations from "../i18n/translations";
+import Layout from "../layouts/Layout.astro";
+import profile from "../profile";
+import Work from "../work/Work.astro";
+
+const t = translations(Astro.currentLocale);
+const site = new URL("/", Astro.site).href;
+---
+
+<Layout
+  title={`${profile.name} — ${t("Head of frontend at")} ${profile.employer.name}`}
+  description={t(
+    "Head of frontend at Exa Labs, remote from Argentina. My team and I build the Exa App, a self-custodial wallet with a Visa card, in React Native and TypeScript.",
+  )}
+  schema={{
+    "@graph": [
+      { "@type": "WebSite", "@id": `${site}#website`, url: site, name: profile.name, inLanguage: ["en", "es"] },
+      {
+        "@type": "ProfilePage",
+        url: new URL(getRelativeLocaleUrl(Astro.currentLocale ?? "en"), Astro.site).href,
+        inLanguage: Astro.currentLocale,
+        dateModified: build.date.toISOString(),
+        isPartOf: { "@id": `${site}#website` },
+        mainEntity: {
+          "@type": "Person",
+          "@id": `${site}#person`,
+          name: profile.name,
+          alternateName: profile.handle,
+          jobTitle: t("Head of frontend"),
+          worksFor: { "@type": "Organization", name: profile.employer.name, url: profile.employer.url },
+          address: { "@type": "PostalAddress", addressCountry: profile.country },
+          email: `mailto:${profile.email}`,
+          url: site,
+          sameAs: [profile.github, profile.linkedin],
+          knowsAbout: capabilities(t).flatMap((group) => group.items.map((item) => item.name)),
+          knowsLanguage: ["es", "en", "pt"],
+          alumniOf: { "@type": "CollegeOrUniversity", name: "Universidad Católica de Salta" },
+        },
+      },
+    ],
+  }}
+>
+  <Hero />
+  <Work />
+  <Experience />
+  <Capabilities />
+  <Contributions />
+  <Contact />
+</Layout>

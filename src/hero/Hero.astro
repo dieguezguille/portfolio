@@ -1,0 +1,203 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import translations from "../i18n/translations";
+import Arrow from "../layouts/Arrow.astro";
+import profile from "../profile";
+
+const t = translations(Astro.currentLocale);
+---
+
+<section class="grid">
+  <div class="text">
+    <h1>{profile.name}</h1>
+    <p class="role">
+      {t("Head of frontend at")}{" "}
+      <a class="link" href={profile.employer.url}>
+        {profile.employer.name}
+      </a>
+    </p>
+    <p class="intro">
+      {t("My team and I build the Exa App, a self-custodial wallet with a Visa card, for iOS, Android and the web.")}
+    </p>
+    <p class="meta">
+      <span>{t("Remote from Argentina")}</span>
+      <span aria-hidden="true">·</span>
+      <span>
+        <time class="clock" data-timezone={profile.timezone}></time> UTC−3
+      </span>
+    </p>
+    <ul class="actions" role="list" aria-label={t("Links")}>
+      <li>
+        <a class="link label" href={`mailto:${profile.email}`}>
+          Email
+        </a>
+      </li>
+      <li>
+        <a class="link label" href={getRelativeLocaleUrl(Astro.currentLocale ?? "en", "cv")}>
+          CV
+        </a>
+      </li>
+      <li>
+        <a class="link label" href={profile.github}>
+          GitHub
+          <Arrow />
+        </a>
+      </li>
+      <li>
+        <a class="link label" href={profile.linkedin}>
+          LinkedIn
+          <Arrow />
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="art" aria-hidden="true">
+    <svg class="fallback" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid slice">
+      <path class="edges" d="M80 360V240h80h120V120h40h80V80M160 240v160M280 240v120h80M320 120V40"></path>
+      <path
+        class="nodes"
+        d="M77 357h6v6h-6zM157 237h6v6h-6zM277 237h6v6h-6zM317 117h6v6h-6zM397 77h6v6h-6zM157 397h6v6h-6zM357 357h6v6h-6zM317 37h6v6h-6z"
+      ></path>
+      <path class="packets" d="M217 237h6v6h-6zM357 117h6v6h-6zM277 297h6v6h-6z"></path>
+    </svg>
+  </div>
+</section>
+
+<script>
+  const clock = document.querySelector<HTMLTimeElement>("[data-timezone]");
+  if (clock) {
+    const format = new Intl.DateTimeFormat(document.documentElement.lang, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+      timeZone: clock.dataset.timezone ?? "UTC",
+    });
+    const tick = () => {
+      const now = new Date();
+      clock.textContent = format.format(now);
+      clock.dateTime = now.toISOString();
+      setTimeout(tick, 60_000 - (now.getTime() % 60_000));
+    };
+    tick();
+  }
+</script>
+
+<style>
+  section {
+    grid-template-rows: auto minmax(18rem, 1fr);
+    row-gap: 2rem;
+    min-height: calc(100svh - var(--header));
+    padding-top: clamp(2rem, 1rem + 5vw, 5rem);
+  }
+
+  .text {
+    display: grid;
+    grid-column: 1 / -1;
+    align-content: end;
+    gap: 1.25rem;
+  }
+
+  h1 {
+    font-size: var(--display);
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 0.92;
+  }
+
+  .role {
+    font-size: var(--step-2);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .intro {
+    max-width: 40ch;
+    color: var(--muted);
+    font-size: var(--step-1);
+    line-height: 1.4;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .clock {
+    display: inline-block;
+    min-width: 5ch;
+
+    @media (scripting: none) {
+      display: none;
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1.75rem;
+    margin-top: 0.5rem;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+
+  .art {
+    position: relative;
+    grid-column: 1 / -1;
+    margin-inline: calc(-1 * var(--inset));
+    background: radial-gradient(circle, var(--line) 1px, transparent 1.5px) center / 1.5rem 1.5rem;
+  }
+
+  .fallback {
+    width: 100%;
+    height: 100%;
+  }
+
+  .edges {
+    fill: none;
+    stroke: var(--line);
+  }
+
+  .nodes {
+    fill: var(--fg);
+  }
+
+  .packets {
+    fill: var(--accent);
+  }
+
+  @media (width >= 64rem) {
+    section {
+      position: relative;
+      grid-template-rows: 1fr;
+      padding-block: 0;
+    }
+
+    .text {
+      position: relative;
+      z-index: 1;
+      grid-column: 1 / 8;
+      grid-row: 1;
+      padding-block: var(--section);
+    }
+
+    .art {
+      --edge: calc(var(--inset) + max(4.6 * var(--display), 28rem));
+
+      position: absolute;
+      inset: 0;
+      grid-column: auto;
+      margin: 0;
+      mask-image: linear-gradient(to right, transparent var(--edge), black calc(var(--edge) + 20rem));
+    }
+  }
+</style>

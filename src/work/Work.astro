@@ -1,0 +1,210 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import translations from "../i18n/translations";
+import Section from "../layouts/Section.astro";
+import studies from "./studies";
+
+const t = translations(Astro.currentLocale);
+const entries = await studies(Astro.currentLocale);
+---
+
+<Section id="work" index="01" title={t("Selected work")}>
+  <ol role="list">
+    {entries.map((entry, index) => (
+      <li class="reveal" data-project={entry.slug}>
+        <span class="index label muted">{String(index + 1).padStart(2, "0")}</span>
+        <h3>
+          <a
+            href={getRelativeLocaleUrl(Astro.currentLocale ?? "en", `work/${entry.slug}`)}
+            data-astro-prefetch
+            data-study
+          >
+            <span class="title">
+              {entry.data.title}
+              <span class="fill" aria-hidden="true">
+                <span>{entry.data.title}</span>
+              </span>
+            </span>
+          </a>
+        </h3>
+        <p class="summary">{entry.data.summary}</p>
+        <dl class="label">
+          <dt class="visually-hidden">{t("Role")}</dt>
+          <dd>{entry.data.role}</dd>
+          <dt class="visually-hidden">{t("Year")}</dt>
+          <dd class="muted">{entry.data.period.start.slice(0, 4)}</dd>
+          <dt class="visually-hidden">Stack</dt>
+          <dd class="stack muted">{entry.data.stack.slice(0, 4).join(" · ")}</dd>
+        </dl>
+      </li>
+    ))}
+  </ol>
+</Section>
+
+<script>
+  // cspell:ignore pageswap pagereveal
+  const title = (url?: null | string) =>
+    url
+      ? document.querySelector<HTMLElement>(`[data-study][href="${CSS.escape(new URL(url).pathname)}"]`)?.closest("h3")
+      : undefined;
+  const share = (element: HTMLElement | null | undefined, transition: null | ViewTransition) => {
+    if (!element || !transition) return;
+    element.style.viewTransitionName = "study";
+    void transition.finished.finally(() => {
+      element.style.viewTransitionName = "";
+    });
+  };
+
+  addEventListener("pageswap", (event) => {
+    share(title(event.activation?.entry.url), event.viewTransition);
+  });
+  addEventListener("pagereveal", (event) => {
+    if ("navigation" in globalThis) share(title(navigation.activation?.from?.url), event.viewTransition);
+  });
+</script>
+
+<style>
+  ol {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+
+  li {
+    position: relative;
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    row-gap: 0.75rem;
+    padding-block: 1.75rem;
+    border-top: 1px solid var(--line);
+
+    &:last-child {
+      border-bottom: 1px solid var(--line);
+    }
+
+    &[data-project="exa"] {
+      --project: #12a594;
+    }
+
+    &[data-project="supra-argentina"] {
+      --project: #c9a227;
+    }
+
+    &[data-project="ruvibet"] {
+      --project: #00b2e3;
+    }
+
+    @media (prefers-color-scheme: light) {
+      &[data-project="exa"] {
+        --project: #008573;
+      }
+
+      &[data-project="supra-argentina"] {
+        --project: #7a6220;
+      }
+
+      &[data-project="ruvibet"] {
+        --project: #0070c8;
+      }
+    }
+  }
+
+  .index,
+  h3,
+  .summary,
+  dl {
+    grid-column: 1 / -1;
+  }
+
+  h3 {
+    font-size: var(--step-3);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    transition: transform var(--medium) var(--ease);
+
+    a::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+  }
+
+  .title {
+    position: relative;
+    display: inline-block;
+  }
+
+  .fill {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    transform: translateX(-100%);
+
+    > span {
+      display: block;
+      color: var(--project, var(--accent));
+      transform: translateX(100%);
+    }
+  }
+
+  .fill,
+  .fill > span {
+    transition: transform var(--slow) var(--ease);
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  .summary {
+    max-width: 44ch;
+    color: var(--muted);
+  }
+
+  dl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+  }
+
+  li:hover,
+  li:focus-within {
+    h3 {
+      transform: translateX(0.5rem);
+    }
+
+    .index {
+      color: var(--project, var(--accent));
+    }
+
+    .fill,
+    .fill > span {
+      transform: none;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .index {
+      grid-column: 1;
+      padding-top: 0.5em;
+    }
+
+    h3 {
+      grid-column: 2 / 6;
+    }
+
+    .summary {
+      grid-column: 6 / 10;
+      padding-top: 0.35em;
+    }
+
+    dl {
+      grid-column: 10 / -1;
+      flex-direction: column;
+      padding-top: 0.5em;
+    }
+  }
+</style>

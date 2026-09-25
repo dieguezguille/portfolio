@@ -1,0 +1,112 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import translations from "../i18n/translations";
+import Arrow from "../layouts/Arrow.astro";
+import Section from "../layouts/Section.astro";
+import profile from "../profile";
+
+const t = translations(Astro.currentLocale);
+---
+
+<Section id="contact" index="05" title={t("Contact")}>
+  <p class="email reveal">
+    <a class="link" href={`mailto:${profile.email}`}>
+      {profile.email}
+    </a>
+  </p>
+  <div class="copy">
+    <button class="label" type="button" data-copy={profile.email}>
+      {t("Copy email")}
+    </button>
+    <p class="label" role="status" data-copied={t("Email copied to the clipboard")}></p>
+  </div>
+  <ul class="links" role="list" aria-label={t("Links")}>
+    <li>
+      <a class="link label" href={profile.github}>
+        GitHub
+        <Arrow />
+      </a>
+    </li>
+    <li>
+      <a class="link label" href={profile.linkedin}>
+        LinkedIn
+        <Arrow />
+      </a>
+    </li>
+    <li>
+      <a class="link label" href={getRelativeLocaleUrl(Astro.currentLocale ?? "en", "cv")}>
+        CV
+      </a>
+    </li>
+  </ul>
+</Section>
+
+<script>
+  for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy]")) {
+    const status = button.nextElementSibling;
+    const copy = async () => {
+      await navigator.clipboard.writeText(button.dataset.copy ?? "");
+      if (!(status instanceof HTMLElement)) return;
+      status.textContent = status.dataset.copied ?? "";
+      setTimeout(() => (status.textContent = ""), 4000);
+    };
+    button.addEventListener("click", () => void copy());
+  }
+</script>
+
+<style>
+  .email {
+    grid-column: 1 / -1;
+    font-size: clamp(1.5rem, 0.6rem + 4.5vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    overflow-wrap: anywhere;
+  }
+
+  .copy {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+
+    button {
+      min-height: 44px;
+      padding-inline: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+
+      &:hover {
+        border-color: var(--accent);
+      }
+    }
+
+    p:not(:empty)::before {
+      content: "";
+      display: inline-block;
+      width: 0.5em;
+      height: 0.5em;
+      margin-inline-end: 0.6em;
+      background: var(--accent);
+    }
+
+    @media (scripting: none) {
+      display: none;
+    }
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+    column-gap: 1.75rem;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+</style>

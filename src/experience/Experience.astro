@@ -1,0 +1,238 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import facts from "../cv/facts";
+import period from "../i18n/period";
+import translations from "../i18n/translations";
+import Arrow from "../layouts/Arrow.astro";
+import Section from "../layouts/Section.astro";
+import studies from "../work/studies";
+import jobs from "./jobs";
+
+const t = translations(Astro.currentLocale);
+const entries = await jobs(Astro.currentLocale);
+const cases = await studies(Astro.currentLocale);
+const details = facts(t);
+---
+
+<Section id="about" index="02" title={t("Experience")}>
+  <table role="table">
+    <thead class="label muted">
+      <tr role="row">
+        <th role="columnheader" scope="col">
+          {t("Company")}
+        </th>
+        <th role="columnheader" scope="col">
+          {t("Role")}
+        </th>
+        <th role="columnheader" scope="col">
+          {t("Period")}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {entries.map((job) => (
+        <tr class="reveal" role="row">
+          <th role="rowheader" scope="row">
+            {job.data.url ? (
+              <a class="link" href={job.data.url}>
+                {job.data.company}
+              </a>
+            ) : (
+              job.data.company
+            )}
+          </th>
+          <td role="cell">
+            {job.data.role}
+            {job.data.previous && (
+              <p class="previous">
+                {job.data.previous.role},{" "}
+                {period({ start: job.data.period.start, end: job.data.previous.end }, Astro.currentLocale)}
+              </p>
+            )}
+            <p class="summary">{job.data.summary}</p>
+            {cases
+              .filter((entry) => entry.data.job === job.id)
+              .map((study) => (
+                <a
+                  class="more link"
+                  href={getRelativeLocaleUrl(Astro.currentLocale ?? "en", `work/${study.slug}`)}
+                  data-astro-prefetch
+                >
+                  {t("Case study")}: {study.data.title}
+                </a>
+              ))}
+            {job.data.showcase && (
+              <a class="more link" href={job.data.showcase.url}>
+                {job.data.showcase.title}
+                <Arrow />
+              </a>
+            )}
+          </td>
+          <td role="cell" class="period">
+            {period(job.data.period, Astro.currentLocale)}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <dl>
+    {details.map((group) => (
+      <div class="reveal">
+        <dt class="label muted">{group.name}</dt>
+        {group.items.map((item) => (
+          <dd>
+            <span>{item.name}</span>
+            {item.detail && <span class="detail">{item.detail}</span>}
+            {item.period && <span class="when">{item.period}</span>}
+          </dd>
+        ))}
+      </div>
+    ))}
+  </dl>
+</Section>
+
+<style>
+  table,
+  dl {
+    grid-column: 1 / -1;
+    text-align: start;
+  }
+
+  dl div {
+    display: grid;
+    row-gap: 0.5rem;
+    padding-block: 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  dd {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    column-gap: var(--gutter);
+  }
+
+  .detail {
+    grid-column: 1;
+    color: var(--muted);
+  }
+
+  .when {
+    grid-row: 1;
+    grid-column: 2;
+    justify-self: end;
+  }
+
+  th,
+  td {
+    padding-block: 1rem;
+    border-top: 1px solid var(--line);
+    font-weight: inherit;
+    text-align: start;
+    vertical-align: top;
+  }
+
+  thead th {
+    padding-block: 0 0.75rem;
+    border: 0;
+  }
+
+  tbody th {
+    font-weight: 500;
+  }
+
+  .previous,
+  .summary {
+    max-width: 52ch;
+    margin-top: 0.25rem;
+    color: var(--muted);
+    font-size: var(--step--1);
+  }
+
+  .more {
+    display: inline-block;
+    margin-top: 0.5rem;
+    margin-inline-end: 1.5rem;
+    font-size: var(--step--1);
+  }
+
+  .period,
+  .when {
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  @media (width < 40rem) {
+    thead {
+      display: none;
+    }
+
+    tr {
+      display: grid;
+      padding-block: 1rem;
+      border-top: 1px solid var(--line);
+    }
+
+    th,
+    td {
+      padding: 0;
+      border: 0;
+    }
+
+    .period {
+      order: -1;
+      color: var(--muted);
+    }
+  }
+
+  @media (width >= 40rem) {
+    th,
+    td,
+    dt {
+      padding-inline-end: var(--gutter);
+    }
+
+    dl {
+      display: grid;
+      grid-template-columns: 25% auto 1fr auto;
+    }
+
+    dl div {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      align-items: baseline;
+    }
+
+    dd {
+      grid-column: 2 / -1;
+      grid-template-columns: subgrid;
+      column-gap: 0;
+
+      > :not(.when) {
+        padding-inline-end: var(--gutter);
+      }
+    }
+
+    .detail {
+      grid-row: 1;
+      grid-column: 2;
+    }
+
+    .when {
+      grid-column: 3;
+    }
+
+    tbody th {
+      width: 25%;
+    }
+
+    .period {
+      width: 1%;
+      padding-inline-end: 0;
+      text-align: end;
+    }
+  }
+</style>

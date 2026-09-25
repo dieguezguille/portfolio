@@ -1,0 +1,78 @@
+---
+import translations from "../i18n/translations";
+import Arrow from "../layouts/Arrow.astro";
+import Section from "../layouts/Section.astro";
+import profile from "../profile";
+import kinds from "./kinds";
+import when from "./when";
+
+const t = translations(Astro.currentLocale);
+---
+
+<Section id="contributions" index="04" title={t("Contributions")}>
+  <ul role="list">
+    {profile.contributions.map((contribution) => (
+      <li class="reveal">
+        <p class="repo">
+          <a class="link" href={contribution.url}>
+            {contribution.repo}
+            <Arrow />
+          </a>
+        </p>
+        <p class="title" lang="en">
+          {contribution.title}
+        </p>
+        <p class="label muted">
+          {t(kinds[contribution.kind])} · {when(contribution, t)}
+        </p>
+      </li>
+    ))}
+  </ul>
+</Section>
+
+<style>
+  ul {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+
+  li {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    row-gap: 0.35rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .repo,
+  .title,
+  .label {
+    grid-column: 1 / -1;
+  }
+
+  .repo {
+    font-family: var(--mono);
+    font-size: var(--step--1);
+  }
+
+  .title {
+    color: var(--muted);
+  }
+
+  @media (width >= 64rem) {
+    .repo {
+      grid-column: 1 / 5;
+    }
+
+    .title {
+      grid-column: 5 / 10;
+    }
+
+    .label {
+      grid-column: 10 / -1;
+      text-align: end;
+    }
+  }
+</style>

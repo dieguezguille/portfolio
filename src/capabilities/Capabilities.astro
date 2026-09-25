@@ -1,0 +1,53 @@
+---
+import translations from "../i18n/translations";
+import Arrow from "../layouts/Arrow.astro";
+import Section from "../layouts/Section.astro";
+import capabilities from "./capabilities";
+
+const t = translations(Astro.currentLocale);
+---
+
+<Section id="capabilities" index="03" title={t("Capabilities")}>
+  <div class="groups">
+    {capabilities(t).map((group) => (
+      <div class="reveal">
+        <h3 class="label muted">{group.name}</h3>
+        <ul role="list">
+          {group.items.map((item) => (
+            <li>
+              <a class="link" href={item.url}>
+                {item.name}
+                <Arrow />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</Section>
+
+<style>
+  .groups {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 2.5rem var(--gutter);
+  }
+
+  h3 {
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  li {
+    padding-block: 0.2rem;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
+</style>

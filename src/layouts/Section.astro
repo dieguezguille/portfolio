@@ -1,0 +1,50 @@
+---
+type Props = { id: string; index: string; title: string };
+---
+
+<section class="grid" id={Astro.props.id} aria-labelledby={`${Astro.props.id}-title`}>
+  <h2 class="label" id={`${Astro.props.id}-title`}>
+    <span class="muted" aria-hidden="true">
+      {Astro.props.index} /
+    </span>
+    {Astro.props.title}
+  </h2>
+  <slot />
+</section>
+
+<style>
+  section {
+    position: relative;
+    row-gap: clamp(2rem, 1.5rem + 2.5vw, 3.5rem);
+    padding-block: var(--section);
+    background: linear-gradient(var(--line), var(--line)) 0 5px / 100% 1px no-repeat;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 40rem;
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 11px;
+      height: 11px;
+      background:
+        linear-gradient(var(--muted), var(--muted)) center / 1px 100% no-repeat,
+        linear-gradient(var(--muted), var(--muted)) center / 100% 1px no-repeat;
+    }
+
+    &::before {
+      left: calc(var(--inset) - 5px);
+    }
+
+    &::after {
+      right: calc(var(--inset) - 5px);
+    }
+  }
+
+  h2 {
+    display: flex;
+    grid-column: 1 / -1;
+    gap: 1ch;
+  }
+</style>
