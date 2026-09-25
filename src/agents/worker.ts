@@ -8,20 +8,25 @@ export default {
       const response = await bindings.ASSETS.fetch(new URL(markdown(url.pathname), url));
       if (response.ok) return document(response);
     }
+    const card = cards.get(url.pathname);
+    if (card && /^(?:curl|wget|httpie|xh)\//i.test(request.headers.get("User-Agent") ?? "")) {
+      const response = await bindings.ASSETS.fetch(new URL(card, url));
+      if (response.ok) return document(response, "text/plain", "Accept, User-Agent");
+    }
     const response = await bindings.ASSETS.fetch(request);
     if (!response.headers.get("Content-Type")?.startsWith("text/html")) return response;
     const page = new Response(response.body, response);
-    page.headers.append("Vary", "Accept");
+    page.headers.append("Vary", card ? "Accept, User-Agent" : "Accept");
     return page;
   },
 };
 
-function document(source: Response) {
+function document(source: Response, type = "text/markdown", vary = "Accept") {
   const response = new Response(source.body, source);
   if (!response.ok) return response;
-  response.headers.set("Content-Type", "text/markdown; charset=utf-8");
+  response.headers.set("Content-Type", `${type}; charset=utf-8`);
   response.headers.set("X-Robots-Tag", "noindex");
-  response.headers.append("Vary", "Accept");
+  response.headers.append("Vary", vary);
   return response;
 }
 
@@ -39,3 +44,8 @@ function prefers(accept: string) {
   const weight = weights.get("text/markdown") ?? 0;
   return weight > 0 && weight >= (weights.get("text/html") ?? 0);
 }
+
+const cards = new Map([
+  ["/", "/card.txt"],
+  ["/es", "/es/card.txt"],
+]);

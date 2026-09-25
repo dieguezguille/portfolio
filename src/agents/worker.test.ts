@@ -4,6 +4,9 @@ import worker from "./worker";
 
 const files: Record<string, [string, string]> = {
   "/": ["<!doctype html>", "text/html"],
+  "/card.txt": ["Guillermo Diéguez", "text/plain"],
+  "/es": ["<!doctype html>", "text/html"],
+  "/es/card.txt": ["Líder de frontend", "text/plain"],
   "/index.md": ["# Home", "text/markdown"],
   "/work/exa": ["<!doctype html>", "text/html"],
   "/work/exa.md": ["# Exa App", "text/markdown"],
@@ -21,8 +24,11 @@ const bindings = {
     },
   },
 };
-const request = (path: string, accept = "text/html,application/xhtml+xml,*/*;q=0.8") =>
-  worker.fetch(new Request(`https://guillermodieguez.com${path}`, { headers: { Accept: accept } }), bindings);
+const request = (path: string, accept = "text/html,application/xhtml+xml,*/*;q=0.8", agent = "Mozilla/5.0") =>
+  worker.fetch(
+    new Request(`https://guillermodieguez.com${path}`, { headers: { Accept: accept, "User-Agent": agent } }),
+    bindings,
+  );
 
 describe("worker", () => {
   test("serves html to browsers and varies on accept", async () => {
@@ -55,6 +61,31 @@ describe("worker", () => {
     const response = await request("/work/exa.md");
     expect(response.headers.get("Content-Type")).toBe("text/markdown; charset=utf-8");
     expect(response.headers.get("X-Robots-Tag")).toBe("noindex");
+  });
+
+  test("serves the terminal card to command line clients on the home pages", async () => {
+    for (const [path, agent, text] of [
+      ["/", "curl/8.7.1", "Guillermo Diéguez"],
+      ["/es", "HTTPie/3.2.4", "Líder de frontend"],
+    ] as const) {
+      const response = await request(path, "*/*", agent);
+      expect(await response.text()).toBe(text);
+      expect(response.headers.get("Content-Type")).toBe("text/plain; charset=utf-8");
+      expect(response.headers.get("Vary")).toBe("Accept, User-Agent");
+    }
+  });
+
+  test("keeps markdown and inner pages for command line clients", async () => {
+    const markdown = await request("/", "text/markdown", "curl/8.7.1");
+    expect(await markdown.text()).toBe("# Home");
+    const page = await request("/work/exa", "*/*", "curl/8.7.1");
+    expect(await page.text()).toBe("<!doctype html>");
+  });
+
+  test("varies the home pages on user agent for browsers", async () => {
+    const response = await request("/");
+    expect(await response.text()).toBe("<!doctype html>");
+    expect(response.headers.get("Vary")).toBe("Accept, User-Agent");
   });
 
   test("passes other assets through untouched", async () => {
