@@ -2,6 +2,7 @@
 import { getRelativeLocaleUrl } from "astro:i18n";
 
 import translations from "../i18n/translations";
+import Lattice from "../lattice/Lattice.astro";
 import Arrow from "../layouts/Arrow.astro";
 import profile from "../profile";
 
@@ -52,15 +53,8 @@ const t = translations(Astro.currentLocale);
       </li>
     </ul>
   </div>
-  <div class="art" aria-hidden="true">
-    <svg class="fallback" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid slice">
-      <path class="edges" d="M80 360V240h80h120V120h40h80V80M160 240v160M280 240v120h80M320 120V40"></path>
-      <path
-        class="nodes"
-        d="M77 357h6v6h-6zM157 237h6v6h-6zM277 237h6v6h-6zM317 117h6v6h-6zM397 77h6v6h-6zM157 397h6v6h-6zM357 357h6v6h-6zM317 37h6v6h-6z"
-      ></path>
-      <path class="packets" d="M217 237h6v6h-6zM357 117h6v6h-6zM277 297h6v6h-6z"></path>
-    </svg>
+  <div class="art">
+    <Lattice />
   </div>
 </section>
 
@@ -154,25 +148,6 @@ const t = translations(Astro.currentLocale);
     position: relative;
     grid-column: 1 / -1;
     margin-inline: calc(-1 * var(--inset));
-    background: radial-gradient(circle, var(--line) 1px, transparent 1.5px) center / 1.5rem 1.5rem;
-  }
-
-  .fallback {
-    width: 100%;
-    height: 100%;
-  }
-
-  .edges {
-    fill: none;
-    stroke: var(--line);
-  }
-
-  .nodes {
-    fill: var(--fg);
-  }
-
-  .packets {
-    fill: var(--accent);
   }
 
   @media (width >= 64rem) {
