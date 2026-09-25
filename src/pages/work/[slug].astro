@@ -1,0 +1,12 @@
+---
+import type { InferGetStaticPropsType } from "astro";
+
+import paths from "../../work/paths";
+import Study from "../../work/Study.astro";
+
+export const getStaticPaths = () => paths("en");
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+---
+
+<Study {...Astro.props} />

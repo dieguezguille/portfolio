@@ -1,0 +1,452 @@
+---
+import { Picture } from "astro:assets";
+import { render } from "astro:content";
+import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from "astro:i18n";
+
+import jobs from "../experience/jobs";
+import period from "../i18n/period";
+import translations from "../i18n/translations";
+import Arrow from "../layouts/Arrow.astro";
+import Layout from "../layouts/Layout.astro";
+import profile from "../profile";
+import value from "./value";
+
+import type studies from "./studies";
+
+type Study = Awaited<ReturnType<typeof studies>>[number];
+type Props = { entry: Study; next?: Study | undefined; previous?: Study | undefined };
+
+const t = translations(Astro.currentLocale);
+const locale = Astro.currentLocale ?? "en";
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const roles = await jobs(locale);
+const job = roles.find((item) => item.id === entry.data.job);
+const stores: Partial<Record<string, string>> = { ios: "App Store", android: "Google Play" };
+const isWide = entry.data.screens.some((screen) => screen.image.width > screen.image.height);
+---
+
+<Layout
+  title={`${entry.data.title} — ${profile.name}`}
+  description={entry.data.summary}
+  type="article"
+  schema={{
+    "@type": "CreativeWork",
+    name: entry.data.title,
+    description: entry.data.summary,
+    url: getAbsoluteLocaleUrl(locale, `work/${entry.slug}`),
+    inLanguage: locale,
+    keywords: entry.data.stack.join(", "),
+    ...(entry.data.period.start !== "TODO" && { dateCreated: entry.data.period.start }),
+    author: { "@type": "Person", "@id": new URL("/#person", Astro.site).href, name: profile.name },
+  }}
+>
+  <article class="grid">
+    <a class="back link label muted" href={`${getRelativeLocaleUrl(locale)}#work`}>
+      {t("All work")}
+    </a>
+    <h1>{entry.data.title}</h1>
+    <p class="summary">{entry.data.summary}</p>
+    <dl class="meta">
+      <div>
+        <dt class="label muted">{t("Role")}</dt>
+        {job?.data.previous ? (
+          <>
+            <dd>
+              {entry.data.role}
+              <span class="when">{period({ start: job.data.previous.end, end: job.data.period.end }, locale)}</span>
+            </dd>
+            <dd class="previous">
+              {job.data.previous.role}
+              <span class="when">{period({ start: job.data.period.start, end: job.data.previous.end }, locale)}</span>
+            </dd>
+          </>
+        ) : (
+          <dd>{entry.data.role}</dd>
+        )}
+      </div>
+      <div>
+        <dt class="label muted">{t("Period")}</dt>
+        <dd>{period(entry.data.period, locale)}</dd>
+      </div>
+      {entry.data.team && (
+        <div>
+          <dt class="label muted">{t("Team")}</dt>
+          <dd>{entry.data.team}</dd>
+        </div>
+      )}
+      <div class="stack">
+        <dt class="label muted">Stack</dt>
+        <dd>{entry.data.stack.join(", ")}</dd>
+      </div>
+      {Object.keys(entry.data.links).length > 0 && (
+        <div>
+          <dt class="label muted">{t("Links")}</dt>
+          {Object.entries(entry.data.links).map(
+            ([key, url]) =>
+              url && (
+                <dd>
+                  <a class="link" href={url}>
+                    {stores[key] ?? url.replace("https://", "")}
+                    <Arrow />
+                  </a>
+                </dd>
+              ),
+          )}
+        </div>
+      )}
+    </dl>
+    {entry.data.metrics.length > 0 && (
+      <dl class="metrics" aria-label={t("Numbers")}>
+        {entry.data.metrics.map((metric) => (
+          <div>
+            <dt class="label muted">{metric.label}</dt>
+            <dd>{value(metric, locale)}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+    {entry.data.screens.length > 0 && (
+      <div class:list={["screens", { wide: isWide }]}>
+        {entry.data.screens.map((screen, index) => (
+          <figure>
+            <button class="thumb" type="button" popovertarget={`screen-${String(index + 1)}`}>
+              <Picture
+                src={screen.image}
+                alt={screen.alt}
+                formats={["avif"]}
+                fallbackFormat="webp"
+                widths={isWide ? [320, 640] : [160, 320, 480]}
+                sizes={isWide ? "(width >= 40rem) 18rem, 45vw" : "(width >= 40rem) 10rem, 22vw"}
+              />
+            </button>
+            <figcaption class="label muted">{screen.caption}</figcaption>
+            <div class="viewer" id={`screen-${String(index + 1)}`} popover>
+              <button
+                class="close label"
+                type="button"
+                popovertarget={`screen-${String(index + 1)}`}
+                popovertargetaction="hide"
+              >
+                {t("Close")}
+              </button>
+              <Picture
+                src={screen.image}
+                alt={screen.alt}
+                formats={["avif"]}
+                fallbackFormat="webp"
+                widths={isWide ? [800, 1200, 1600] : [390, 780]}
+                sizes={isWide ? "92vw" : "min(92vw, 42svh)"}
+              />
+            </div>
+          </figure>
+        ))}
+      </div>
+    )}
+    <div class="prose">
+      <Content />
+    </div>
+    <nav class="pagination" aria-label={t("More work")}>
+      {Astro.props.previous && (
+        <a
+          class="previous"
+          href={getRelativeLocaleUrl(locale, `work/${Astro.props.previous.slug}`)}
+          data-astro-prefetch
+        >
+          <span class="label muted">{t("Previous")}</span>
+          <span class="title">{Astro.props.previous.data.title}</span>
+        </a>
+      )}
+      {Astro.props.next && (
+        <a class="next" href={getRelativeLocaleUrl(locale, `work/${Astro.props.next.slug}`)} data-astro-prefetch>
+          <span class="label muted">{t("Next")}</span>
+          <span class="title">{Astro.props.next.data.title}</span>
+        </a>
+      )}
+    </nav>
+  </article>
+</Layout>
+
+<style>
+  article {
+    row-gap: 2rem;
+    padding-block: clamp(2rem, 1rem + 5vw, 5rem) var(--section);
+
+    > * {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .back {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+
+    &::before {
+      content: "←";
+      margin-inline-end: 0.5em;
+    }
+  }
+
+  h1 {
+    font-size: var(--display);
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 0.92;
+    view-transition-name: study;
+  }
+
+  .summary {
+    max-width: 36ch;
+    font-size: var(--step-2);
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 1.5rem var(--gutter);
+    padding-block: 1.5rem;
+    border-block: 1px solid var(--line);
+
+    dt {
+      margin-bottom: 0.4rem;
+    }
+
+    .when {
+      display: block;
+      color: var(--muted);
+    }
+
+    .previous {
+      margin-top: 0.5rem;
+    }
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+    }
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 1.5rem var(--gutter);
+
+    div {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 0.5rem;
+    }
+
+    dd {
+      font-family: var(--mono);
+      font-size: var(--step-4);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+  }
+
+  .screens {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 10rem));
+    gap: 1rem var(--gutter);
+
+    figure {
+      display: grid;
+      align-content: start;
+      gap: 0.6rem;
+    }
+  }
+
+  .wide {
+    grid-template-columns: repeat(2, minmax(0, 18rem));
+
+    @media (width >= 40rem) {
+      grid-template-columns: repeat(4, minmax(0, 18rem));
+    }
+  }
+
+  .thumb {
+    display: block;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 12% / 5.5%;
+    overflow: hidden;
+    background: none;
+    cursor: zoom-in;
+
+    &:hover {
+      border-color: var(--accent);
+    }
+
+    :global(img) {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 390 / 844;
+      object-fit: cover;
+      object-position: top;
+    }
+  }
+
+  .viewer:popover-open {
+    display: grid;
+    justify-items: end;
+    gap: 0.75rem;
+    max-width: 92vw;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    overflow: visible;
+    background: none;
+
+    &::backdrop {
+      background: rgb(0 0 0 / 0.85);
+    }
+
+    :global(img) {
+      display: block;
+      max-width: 92vw;
+      max-height: calc(92svh - 3.5rem);
+      width: auto;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 12% / 5.5%;
+    }
+  }
+
+  .wide {
+    .thumb,
+    .viewer :global(img) {
+      border-radius: 0.5rem;
+    }
+
+    .thumb :global(img) {
+      aspect-ratio: 16 / 10;
+    }
+  }
+
+  .close {
+    min-height: 44px;
+    padding-inline: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+  }
+
+  .prose {
+    display: grid;
+    grid-template-columns: subgrid;
+    row-gap: 1rem;
+    margin-top: 2rem;
+
+    :global(> *) {
+      grid-column: 1 / -1;
+      max-width: 64ch;
+    }
+
+    :global(h2) {
+      font-family: var(--mono);
+      font-size: var(--step--2);
+      font-weight: 450;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    :global(h2),
+    :global(h2 + *) {
+      margin-top: 2.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+    }
+
+    :global(h2:first-child),
+    :global(h2:first-child + *) {
+      margin-top: 0;
+    }
+
+    :global(ul) {
+      display: grid;
+      gap: 0.75rem;
+      padding-inline-start: 1.25rem;
+      list-style: square;
+    }
+
+    :global(li::marker) {
+      color: var(--accent);
+    }
+
+    :global(a) {
+      text-decoration: underline;
+      text-decoration-color: var(--muted);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
+
+      &:hover {
+        text-decoration-color: var(--accent);
+      }
+    }
+
+    :global(strong) {
+      font-weight: 500;
+    }
+
+    :global(code) {
+      font-size: 0.9em;
+    }
+  }
+
+  .pagination {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gutter);
+    margin-top: var(--section);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+
+    a {
+      display: grid;
+      gap: 0.5rem;
+      min-height: 44px;
+    }
+
+    .next {
+      grid-column: 2;
+      text-align: end;
+    }
+
+    .title {
+      font-size: var(--step-2);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  @media (width < 64rem) {
+    .prose :global(h2 + *) {
+      margin-top: 0;
+      padding-top: 0;
+      border: 0;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .prose {
+      :global(> *) {
+        grid-column: 5 / -1;
+      }
+
+      :global(h2) {
+        grid-column: 1 / 4;
+      }
+    }
+  }
+</style>
