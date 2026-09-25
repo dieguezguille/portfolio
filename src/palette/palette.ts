@@ -1,3 +1,5 @@
+import copy from "../agents/copy";
+
 const wired = new WeakSet<HTMLDialogElement>();
 
 export default function palette(dialog: HTMLDialogElement) {
@@ -37,6 +39,11 @@ export default function palette(dialog: HTMLDialogElement) {
     if (action === "copy") {
       await navigator.clipboard.writeText(dialog.dataset.email ?? "");
       status.textContent = dialog.dataset.copied ?? "";
+      return;
+    }
+    if (action === "markdown") {
+      await copy(dialog.dataset.markdown ?? "");
+      status.textContent = dialog.dataset.exported ?? "";
       return;
     }
     dialog.close();

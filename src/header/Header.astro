@@ -2,9 +2,13 @@
 import { getRelativeLocaleUrl } from "astro:i18n";
 
 import translations from "../i18n/translations";
+import Arrow from "../layouts/Arrow.astro";
 import Monogram from "../monogram/Monogram.astro";
 
-type Props = { alternate: { href: string; locale: string; name: string } };
+type Props = {
+  agents?: undefined | { chatgpt: string; claude: string; markdown: string };
+  alternate: { href: string; locale: string; name: string };
+};
 
 const t = translations(Astro.currentLocale);
 const home = getRelativeLocaleUrl(Astro.currentLocale ?? "en");
@@ -42,6 +46,30 @@ const home = getRelativeLocaleUrl(Astro.currentLocale ?? "en");
   >
     {Astro.props.alternate.locale}
   </a>
+  {Astro.props.agents && (
+    <>
+      <button class="agents label" type="button" popovertarget="agents" aria-label={`MD, ${t("Page actions")}`}>
+        MD
+      </button>
+      <div id="agents" class="menu" popover>
+        <button class="label" type="button" data-markdown={Astro.props.agents.markdown}>
+          {t("Copy as Markdown")}
+        </button>
+        <a class="label" href={Astro.props.agents.markdown}>
+          {t("View as Markdown")}
+        </a>
+        <a class="label" href={Astro.props.agents.chatgpt}>
+          {t("Open in ChatGPT")}
+          <Arrow />
+        </a>
+        <a class="label" href={Astro.props.agents.claude}>
+          {t("Open in Claude")}
+          <Arrow />
+        </a>
+        <p class="label muted" role="status" data-copied={t("Markdown copied to the clipboard")} />
+      </div>
+    </>
+  )}
   <button
     class="palette label"
     type="button"
@@ -53,6 +81,18 @@ const home = getRelativeLocaleUrl(Astro.currentLocale ?? "en");
     <kbd>⌘K</kbd>
   </button>
 </header>
+
+<script>
+  import copy from "../agents/copy";
+
+  const button = document.querySelector<HTMLButtonElement>("[data-markdown]");
+  const status = button?.parentElement?.querySelector<HTMLElement>("[role=status]");
+  button?.addEventListener("click", () => {
+    void copy(button.dataset.markdown ?? "").then(() => {
+      if (status) status.textContent = status.dataset.copied ?? "";
+    });
+  });
+</script>
 
 <style>
   header {
@@ -88,6 +128,63 @@ const home = getRelativeLocaleUrl(Astro.currentLocale ?? "en");
     display: inline-grid;
     place-items: center;
     min-height: 44px;
+  }
+
+  .agents {
+    min-height: 28px;
+    padding-inline: 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--muted);
+
+    &:hover {
+      color: var(--fg);
+    }
+
+    @media (width < 22.5rem) {
+      display: none;
+    }
+  }
+
+  .menu {
+    inset: calc(var(--header) + 0.5rem) var(--inset) auto auto;
+    min-width: 15rem;
+    margin: 0;
+    padding: 0.5rem 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--fg);
+
+    a,
+    button {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      width: 100%;
+      min-height: 44px;
+      padding-inline: 1rem;
+      border-left: 2px solid transparent;
+
+      &:hover {
+        background: var(--bg);
+        border-left-color: var(--accent);
+      }
+    }
+
+    p {
+      padding: 0.5rem 1rem 0.25rem;
+
+      &:empty {
+        display: none;
+      }
+    }
+
+    [data-markdown] {
+      @media (scripting: none) {
+        display: none;
+      }
+    }
   }
 
   .palette {

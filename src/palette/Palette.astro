@@ -5,7 +5,10 @@ import translations from "../i18n/translations";
 import profile from "../profile";
 import studies from "../work/studies";
 
-type Props = { alternate: { href: string; name: string } };
+type Props = {
+  agents?: undefined | { chatgpt: string; claude: string; markdown: string };
+  alternate: { href: string; name: string };
+};
 
 const t = translations(Astro.currentLocale);
 const locale = Astro.currentLocale ?? "en";
@@ -33,6 +36,14 @@ const groups = [
       { label: t("Open CV"), href: getRelativeLocaleUrl(locale, "cv") },
       { label: `${t("Switch to")} ${Astro.props.alternate.name}`, href: Astro.props.alternate.href },
       { label: t("View source"), href: profile.source },
+      ...(Astro.props.agents
+        ? [
+            { label: t("Copy as Markdown"), action: "markdown" },
+            { label: t("View as Markdown"), href: Astro.props.agents.markdown },
+            { label: t("Open in ChatGPT"), href: Astro.props.agents.chatgpt },
+            { label: t("Open in Claude"), href: Astro.props.agents.claude },
+          ]
+        : []),
     ],
   },
   {
@@ -53,6 +64,8 @@ const groups = [
   data-results={t("Results: {{count}}")}
   data-copied={t("Email copied to the clipboard")}
   data-email={profile.email}
+  data-markdown={Astro.props.agents?.markdown}
+  data-exported={t("Markdown copied to the clipboard")}
 >
   <input
     type="text"

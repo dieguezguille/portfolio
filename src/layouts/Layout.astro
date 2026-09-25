@@ -6,6 +6,7 @@ import "../styles/base.css";
 import { Font } from "astro:assets";
 import { getRelativeLocaleUrl } from "astro:i18n";
 
+import markdown from "../agents/markdown";
 import Footer from "../footer/Footer.astro";
 import Header from "../header/Header.astro";
 import region from "../i18n/region";
@@ -28,6 +29,17 @@ const path = pathname.replace(/^\/es(?=\/|$)/, "") || "/";
 const canonical = new URL(pathname, Astro.site).href;
 const alternate = Astro.currentLocale === "es" ? "en" : "es";
 const url = (code: string) => new URL(getRelativeLocaleUrl(code, path), Astro.site).href;
+const prompt = t("Read {{url}} so I can ask you questions about it.").replace(
+  "{{url}}",
+  () => new URL(markdown(pathname), Astro.site).href,
+);
+const agents = Astro.props.noindex
+  ? undefined
+  : {
+      markdown: markdown(pathname),
+      chatgpt: `https://chatgpt.com/?hints=search&q=${encodeURIComponent(prompt)}`,
+      claude: `https://claude.ai/new?q=${encodeURIComponent(prompt)}`,
+    };
 const switcher = {
   href: getRelativeLocaleUrl(alternate, path),
   locale: alternate,
@@ -50,6 +62,7 @@ const switcher = {
         <link rel="alternate" hreflang="en" href={url("en")} />
         <link rel="alternate" hreflang="es" href={url("es")} />
         <link rel="alternate" hreflang="x-default" href={url("en")} />
+        <link rel="alternate" type="text/markdown" href={markdown(pathname)} />
       </>
     )}
     <meta name="color-scheme" content="dark light" />
@@ -87,12 +100,12 @@ const switcher = {
     <a class="skip" href="#main">
       {t("Skip to content")}
     </a>
-    <Header alternate={switcher} />
+    <Header agents={agents} alternate={switcher} />
     <main id="main">
       <slot />
     </main>
     <Footer />
-    <Palette alternate={switcher} />
+    <Palette agents={agents} alternate={switcher} />
   </body>
 </html>
 

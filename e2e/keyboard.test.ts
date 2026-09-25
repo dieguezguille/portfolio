@@ -19,7 +19,7 @@ test("the skip link is the first focusable element and moves focus to main", asy
 test("tab order follows the header", async ({ page, browserName }) => {
   await page.goto("/");
   const names = [];
-  for (let step = 0; step < 7; step++) {
+  for (let step = 0; step < 8; step++) {
     await page.keyboard.press(tab(browserName));
     names.push(
       await page.evaluate(
@@ -27,15 +27,16 @@ test("tab order follows the header", async ({ page, browserName }) => {
       ),
     );
   }
-  expect(names.slice(0, 6)).toStrictEqual([
+  expect(names.slice(0, 7)).toStrictEqual([
     "Skip to content",
     "Guillermo Diéguez, home",
     "Work",
     "About",
     "Contact",
     "Español",
+    "MD, Page actions",
   ]);
-  expect(names[6]).toMatch(/^Command menu/);
+  expect(names[7]).toMatch(/^Command menu/);
 });
 
 test("the command palette works end to end with the keyboard", async ({ page }) => {
