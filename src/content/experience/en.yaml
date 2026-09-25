@@ -1,0 +1,63 @@
+exa-labs:
+  company: Exa Labs
+  url: https://exactly.app
+  role: Head of frontend
+  period:
+    start: "2024-07"
+  previous:
+    role: Senior frontend developer
+    end: "2026-06"
+  summary: I build the Exa App, a self-custodial wallet with a Visa card, for iOS, Android and the web, and since June 2026 lead its frontend team. I shipped the app side of the Base launch and have made 1,200+ commits to its public monorepo.
+  highlights:
+    - "Ship the Expo app to iOS, Android and the web: over 100 mobile releases since November 2024."
+    - Built the app side of the Base launch, and swaps and sends across networks through LI.FI.
+    - Set up localization in English, Spanish and Portuguese.
+    - Extended the Maestro end-to-end tests for payment flows and traced release blockers to their root cause, including bugs in third-party libraries, some of which I reported upstream.
+thestartup:
+  company: TheStartup.com
+  role: Senior React developer
+  period:
+    start: "2022-11"
+    end: "2024-07"
+  summary: I built the CMS-style content features and improved the multi-tenancy of a SaaS where organizations run entrepreneurship programs. I was part of the small team that took the company through funding rounds totaling over 1M USD. I led technical interviews for senior React roles.
+  highlights:
+    - Built CMS-style content features and improved multi-tenancy in a SaaS for entrepreneurship programs. Part of the small team that took the company through funding rounds totaling over 1M USD.
+    - Led technical interviews for senior React roles.
+rather-labs:
+  company: Rather Labs
+  url: https://ratherlabs.com
+  showcase:
+    title: Membrane, in the Rather Labs portfolio
+    url: https://ratherlabs.com/portfolio/membrane
+  role: Senior frontend engineer
+  period:
+    start: "2022-04"
+    end: "2022-08"
+  summary: I built dApps for crypto trading and lending, and a cross-platform Electron app that encrypts customers' API keys for fiat and crypto payments. I integrated traditional banking APIs and led an R&D squad building proofs of concept.
+  highlights:
+    - Built dApps for crypto trading and lending, and a cross-platform Electron app that encrypts customers' API keys for fiat and crypto payments.
+    - Integrated traditional banking APIs and led an R&D squad building proofs of concept.
+onebittech:
+  company: OneBitTech
+  url: https://www.onebittech.com/en
+  showcase:
+    title: The OneBitTech casino platform
+    url: https://www.onebittech.com/en/casino
+  role: Software developer
+  period:
+    start: "2020-10"
+    end: "2021-12"
+  summary: I owned the Unity and C# frontend of the casino games of Ruvibet, its game studio, working closely with its backend and UI/UX teams. We built Aymara as a team, and I refactored Aliens and Fruits. I created the training program for new team members and introduced unit testing, pair programming and mob programming.
+  highlights:
+    - Owned the Unity and C# frontend of casino games played by thousands, for its studio Ruvibet, working closely with its backend and UI/UX teams.
+    - Created the training program for new team members and introduced unit testing, pair and mob programming.
+siltium:
+  company: Siltium
+  url: https://siltium.com/en
+  role: Software developer, from trainee to junior
+  period:
+    start: "2019-04"
+    end: "2020-10"
+  summary: I built mobile apps with Xamarin Forms and REST APIs with .NET Core, augmented reality experiences with Unity, Vuforia and AR Foundation, and 3D web apps with React, Zustand and react-three-fiber.
+  highlights:
+    - Built augmented reality experiences with Unity and Vuforia, 3D web apps with react-three-fiber, Xamarin apps and .NET Core APIs.

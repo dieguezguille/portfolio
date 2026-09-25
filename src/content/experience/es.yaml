@@ -1,0 +1,64 @@
+# cspell:ignore refactoricé
+exa-labs:
+  company: Exa Labs
+  url: https://exactly.app
+  role: Líder de frontend
+  period:
+    start: "2024-07"
+  previous:
+    role: Desarrollador frontend senior
+    end: "2026-06"
+  summary: Desarrollo Exa App, una billetera autocustodiada con tarjeta Visa, para iOS, Android y web, y desde junio de 2026 lidero su equipo de frontend. Preparé la app para el lanzamiento en Base y llevo más de 1.200 commits en su monorepo público.
+  highlights:
+    - "Publico la app de Expo en iOS, Android y web: más de 100 releases móviles desde noviembre de 2024."
+    - Preparé la app para el lanzamiento en Base y construí los swaps y envíos entre redes con LI.FI.
+    - Armé la localización en inglés, español y portugués.
+    - Amplié las pruebas end-to-end con Maestro de los flujos de pago y rastreé bloqueos de release hasta su causa raíz, incluidos errores en librerías de terceros que en algunos casos reporté a sus mantenedores.
+thestartup:
+  company: TheStartup.com
+  role: Desarrollador React senior
+  period:
+    start: "2022-11"
+    end: "2024-07"
+  summary: Construí las funciones de contenido tipo CMS y mejoré el soporte multi-tenant de un SaaS en el que organizaciones gestionan programas de emprendimiento. Formé parte del equipo chico que llevó a la empresa a levantar más de 1M USD en rondas de inversión. Tomé entrevistas técnicas para puestos React senior.
+  highlights:
+    - Construí funciones tipo CMS y mejoré el soporte multi-tenant de un SaaS de programas de emprendimiento. Parte del equipo chico que llevó a la empresa a levantar más de 1M USD en rondas de inversión.
+    - Tomé entrevistas técnicas para puestos React senior.
+rather-labs:
+  company: Rather Labs
+  url: https://ratherlabs.com
+  showcase:
+    title: Membrane, en el portfolio de Rather Labs
+    url: https://ratherlabs.com/portfolio/membrane
+  role: Desarrollador frontend senior
+  period:
+    start: "2022-04"
+    end: "2022-08"
+  summary: Construí dApps de trading y préstamos cripto, y una app multiplataforma en Electron que cifra las API keys de los clientes para pagos fiat y cripto. Integré APIs bancarias tradicionales y lideré un equipo de I+D que armaba pruebas de concepto.
+  highlights:
+    - Construí dApps de trading y préstamos cripto, y una app multiplataforma en Electron que cifra las API keys de los clientes para pagos fiat y cripto.
+    - Integré APIs bancarias tradicionales y lideré un equipo de I+D que armaba pruebas de concepto.
+onebittech:
+  company: OneBitTech
+  url: https://www.onebittech.com
+  showcase:
+    title: La plataforma de casino de OneBitTech
+    url: https://www.onebittech.com/casino
+  role: Desarrollador de software
+  period:
+    start: "2020-10"
+    end: "2021-12"
+  summary: Estuve a cargo del frontend en Unity y C# de los juegos de casino de Ruvibet, su estudio de juegos, en estrecha colaboración con sus equipos de backend y UI/UX. Construimos Aymara en equipo, y yo refactoricé Aliens and Fruits. Armé el programa de formación para los nuevos integrantes del equipo e introduje pruebas unitarias, pair programming y mob programming.
+  highlights:
+    - Estuve a cargo del frontend en Unity y C# de juegos de casino con miles de jugadores, para su estudio Ruvibet, en estrecha colaboración con sus equipos de backend y UI/UX.
+    - Armé el programa de formación del equipo e introduje pruebas unitarias, pair y mob programming.
+siltium:
+  company: Siltium
+  url: https://siltium.com/es
+  role: Desarrollador de software, de trainee a junior
+  period:
+    start: "2019-04"
+    end: "2020-10"
+  summary: Construí apps móviles con Xamarin Forms y APIs REST con .NET Core, experiencias de realidad aumentada con Unity, Vuforia y AR Foundation, y apps web 3D con React, Zustand y react-three-fiber.
+  highlights:
+    - Construí experiencias de realidad aumentada con Unity y Vuforia, apps web 3D con react-three-fiber, apps en Xamarin y APIs en .NET Core.
