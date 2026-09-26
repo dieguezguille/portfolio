@@ -3,7 +3,7 @@ type Props = { id: string; index: string; title: string };
 ---
 
 <section class="grid" id={Astro.props.id} aria-labelledby={`${Astro.props.id}-title`}>
-  <h2 class="label" id={`${Astro.props.id}-title`}>
+  <h2 class="label reveal" id={`${Astro.props.id}-title`}>
     <span class="muted" aria-hidden="true">
       {Astro.props.index} /
     </span>

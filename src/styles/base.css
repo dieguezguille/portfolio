@@ -115,12 +115,16 @@
     }
   }
 
-  .reveal {
-    @media (prefers-reduced-motion: no-preference) {
+  :is(.reveal, .reveals > *) {
+    @media screen and (prefers-reduced-motion: no-preference) {
       @supports (animation-timeline: view()) {
-        animation: reveal var(--ease) both;
-        animation-timeline: view();
-        animation-range: entry 0% entry 70%;
+        animation:
+          below linear backwards,
+          above linear forwards;
+        animation-timeline: view(var(--header) 0);
+        animation-range:
+          cover 0% cover 20svh,
+          cover calc(100% - 20svh) cover 100%;
       }
     }
   }
@@ -135,10 +139,17 @@
   }
 }
 
-@keyframes reveal {
+@keyframes below {
   from {
     opacity: 0;
     transform: translateY(1.5rem);
+  }
+}
+
+@keyframes above {
+  to {
+    opacity: 0;
+    transform: translateY(-1.5rem);
   }
 }
 

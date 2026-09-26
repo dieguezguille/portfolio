@@ -50,7 +50,7 @@ const entries = await studies(locale);
       </a>
     </header>
 
-    <section aria-labelledby="experience">
+    <section class="reveals" aria-labelledby="experience">
       <h2 id="experience" class="label">
         {t("Experience")}
       </h2>
@@ -82,7 +82,7 @@ const entries = await studies(locale);
       ))}
     </section>
 
-    <section aria-labelledby="freelance">
+    <section class="reveals" aria-labelledby="freelance">
       <h2 id="freelance" class="label">
         {t("Freelance work")}
       </h2>
@@ -106,7 +106,7 @@ const entries = await studies(locale);
         ))}
     </section>
 
-    <section aria-labelledby="capabilities">
+    <section class="reveals" aria-labelledby="capabilities">
       <h2 id="capabilities" class="label">
         {t("Capabilities")}
       </h2>
@@ -120,7 +120,7 @@ const entries = await studies(locale);
       </dl>
     </section>
 
-    <section aria-labelledby="contributions">
+    <section class="reveals" aria-labelledby="contributions">
       <h2 id="contributions" class="label">
         {t("Contributions")}
       </h2>
@@ -138,7 +138,7 @@ const entries = await studies(locale);
     </section>
 
     {facts(t).map((group) => (
-      <section aria-labelledby={group.id}>
+      <section class="reveals" aria-labelledby={group.id}>
         <h2 id={group.id} class="label">
           {group.name}
         </h2>

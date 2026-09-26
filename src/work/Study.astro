@@ -97,7 +97,7 @@ const isWide = entry.data.screens.some((screen) => screen.image.width > screen.i
       )}
     </dl>
     {entry.data.metrics.length > 0 && (
-      <dl class="metrics" aria-label={t("Numbers")}>
+      <dl class="metrics reveal" aria-label={t("Numbers")}>
         {entry.data.metrics.map((metric) => (
           <div>
             <dt class="label muted">{metric.label}</dt>
@@ -107,7 +107,7 @@ const isWide = entry.data.screens.some((screen) => screen.image.width > screen.i
       </dl>
     )}
     {entry.data.screens.length > 0 && (
-      <div class:list={["screens", { wide: isWide }]}>
+      <div class:list={["screens reveals", { wide: isWide }]}>
         {entry.data.screens.map((screen, index) => (
           <figure>
             <button class="thumb" type="button" popovertarget={`screen-${String(index + 1)}`}>
@@ -143,10 +143,10 @@ const isWide = entry.data.screens.some((screen) => screen.image.width > screen.i
         ))}
       </div>
     )}
-    <div class="prose">
+    <div class="prose reveals">
       <Content />
     </div>
-    <nav class="pagination" aria-label={t("More work")}>
+    <nav class="pagination reveal" aria-label={t("More work")}>
       {Astro.props.previous && (
         <a
           class="previous"
