@@ -1,0 +1,29 @@
+name: visual
+on: push
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.63.0-noble
+    env: { VISUAL: "1" }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version-file: .tool-versions }
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/cache/restore@v6
+        with: { path: node_modules/.astro/assets, key: "astro-${{ hashFiles('src/**') }}", restore-keys: astro- }
+      - run: pnpm build
+        env: { GITHUB_TOKEN: "${{ github.token }}" }
+      - run: pnpm test:e2e e2e/visual.test.ts --project chromium
+        env: { HOME: /root }
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with: { name: playwright-report, path: playwright-report }
+      - if: failure()
+        run: pnpm test:e2e e2e/visual.test.ts --project chromium --update-snapshots changed
+        env: { HOME: /root }
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with: { name: visual-baselines, path: e2e/*-snapshots }
