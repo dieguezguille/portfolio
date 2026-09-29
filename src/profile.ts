@@ -1,4 +1,4 @@
-// cspell:ignore appkit duongdev kristerkari lifinance reown
+// cspell:ignore appkit duongdev kristerkari lifinance reown tamagui
 export default {
   name: "Guillermo Diéguez",
   handle: "dieguezguille",
@@ -10,40 +10,16 @@ export default {
   timezone: "America/Argentina/Buenos_Aires",
   employer: { name: "Exa Labs", url: "https://exactly.app" },
   contributions: [
-    {
-      repo: "exactly/exa",
-      title: "Exa App monorepo",
-      url: "https://github.com/exactly/exa",
-      kind: "contributor",
-      year: 2024,
-    },
-    {
-      repo: "kristerkari/react-native-svg-transformer",
-      title: "fix: pass file path to svgr",
-      url: "https://github.com/kristerkari/react-native-svg-transformer/pull/470",
-      kind: "pull",
-      year: 2026,
-    },
-    {
-      repo: "reown-com/appkit-react-native",
-      title: "[bug]: walletconnect modal styling bug on iOS",
-      url: "https://github.com/reown-com/appkit-react-native/issues/496",
-      kind: "issue",
-      year: 2025,
-    },
-    {
-      repo: "lifinance/sdk",
-      title: "ValidationError - The from amount must be greater than zero when using toAmount",
-      url: "https://github.com/lifinance/sdk/issues/226",
-      kind: "issue",
-      year: 2024,
-    },
-    {
-      repo: "duongdev/phosphor-react-native",
-      title: "Expo: phosphor-react-native v2.0.0 unable to resolve imports for web",
-      url: "https://github.com/duongdev/phosphor-react-native/issues/58",
-      kind: "issue",
-      year: 2024,
-    },
-  ] as const,
+    "https://github.com/exactly/exa",
+    "https://github.com/tamagui/tamagui/pull/4243",
+    "https://github.com/tamagui/tamagui/pull/4242",
+    "https://github.com/tamagui/tamagui/issues/4238",
+    "https://github.com/tamagui/tamagui/issues/4237",
+    "https://github.com/tamagui/tamagui/issues/4236",
+    "https://github.com/tamagui/tamagui/issues/4235",
+    "https://github.com/kristerkari/react-native-svg-transformer/pull/470",
+    "https://github.com/reown-com/appkit-react-native/issues/496",
+    "https://github.com/lifinance/sdk/issues/226",
+    "https://github.com/duongdev/phosphor-react-native/issues/58",
+  ],
 };

@@ -1,7 +1,8 @@
 import { getRelativeLocaleUrl } from "astro:i18n";
 
 import capabilities from "../capabilities/capabilities";
-import kinds from "../contributions/kinds";
+import contributions from "../contributions/contributions";
+import label from "../contributions/label";
 import when from "../contributions/when";
 import facts from "../cv/facts";
 import summary from "../cv/summary";
@@ -48,10 +49,10 @@ export default async function documents() {
         (group) => `**${group.name}**: ${group.items.map((item) => `[${item.name}](${item.url})`).join(", ")}`,
       ),
     );
-    const contributions = list(
-      profile.contributions.map(
+    const contributed = list(
+      contributions.map(
         (contribution) =>
-          `[${contribution.repo}](${contribution.url}): ${contribution.title.replaceAll(/[[\]]/g, String.raw`\$&`)}. ${t(kinds[contribution.kind])}, ${when(contribution, t)}.`,
+          `[${contribution.repo}${"number" in contribution ? `#${String(contribution.number)}` : ""}](${contribution.url}): ${contribution.title.replaceAll(/[[\]]/g, String.raw`\$&`)}. ${label(contribution, t)}, ${when(contribution, t)}.`,
       ),
     );
     const role = `${t("Head of frontend at")} [${profile.employer.name}](${profile.employer.url}).`;
@@ -83,7 +84,7 @@ export default async function documents() {
           `## ${t("Capabilities")}`,
           skills,
           `## ${t("Contributions")}`,
-          contributions,
+          contributed,
         ],
       },
       {
@@ -122,7 +123,7 @@ export default async function documents() {
           `## ${t("Capabilities")}`,
           skills,
           `## ${t("Contributions")}`,
-          contributions,
+          contributed,
           ...background("##"),
         ],
       },

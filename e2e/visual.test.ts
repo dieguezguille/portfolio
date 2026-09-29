@@ -16,7 +16,13 @@ for (const colorScheme of ["dark", "light"] as const) {
         await page.evaluate(() => document.fonts.ready);
         await expect(page).toHaveScreenshot({
           fullPage: true,
-          mask: [page.locator("canvas"), page.locator(".clock"), page.locator(".metrics"), page.locator("footer dl")],
+          mask: [
+            page.locator("canvas"),
+            page.locator(".clock"),
+            page.locator(".metrics"),
+            page.locator("#contributions .label"),
+            page.locator("footer dl"),
+          ],
           stylePath: "e2e/visual.css",
         });
       });

@@ -1,0 +1,32 @@
+---
+import translations from "../i18n/translations";
+import Arrow from "../layouts/Arrow.astro";
+import label from "./label";
+import when from "./when";
+
+import type contributions from "./contributions";
+
+type Props = { contribution: (typeof contributions)[number]; name: string };
+
+const t = translations(Astro.currentLocale);
+---
+
+<p class="name">
+  <a class="link" href={Astro.props.contribution.url}>
+    {Astro.props.name}
+    <Arrow />
+  </a>
+</p>
+<p class="title" lang="en">
+  {Astro.props.contribution.title.split(/`([^`]+)`/).map((part, index) => (index % 2 ? <code>{part}</code> : part))}
+</p>
+<p class="label">
+  {"state" in Astro.props.contribution ? (
+    <span class="state" data-kind={Astro.props.contribution.kind} data-state={Astro.props.contribution.state}>
+      {label(Astro.props.contribution, t)}
+    </span>
+  ) : (
+    <span class="muted">{label(Astro.props.contribution, t)}</span>
+  )}{" "}
+  <span class="muted">· {when(Astro.props.contribution, t)}</span>
+</p>

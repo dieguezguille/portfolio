@@ -1,78 +1,199 @@
 ---
 import translations from "../i18n/translations";
-import Arrow from "../layouts/Arrow.astro";
 import Section from "../layouts/Section.astro";
-import profile from "../profile";
-import kinds from "./kinds";
-import when from "./when";
+import Contribution from "./Contribution.astro";
+import contributions from "./contributions";
+import years from "./years";
 
 const t = translations(Astro.currentLocale);
 ---
 
 <Section id="contributions" index="04" title={t("Contributions")}>
-  <ul role="list">
-    {profile.contributions.map((contribution) => (
-      <li class="reveal">
-        <p class="repo">
-          <a class="link" href={contribution.url}>
-            {contribution.repo}
-            <Arrow />
-          </a>
-        </p>
-        <p class="title" lang="en">
-          {contribution.title}
-        </p>
-        <p class="label muted">
-          {t(kinds[contribution.kind])} · {when(contribution, t)}
-        </p>
-      </li>
-    ))}
+  <ul class="contributions" role="list">
+    {Map.groupBy(contributions, (contribution) => contribution.repo)
+      .entries()
+      .map(([repo, entries]) => (
+        <li class:list={["reveal", { row: entries.length === 1 }]}>
+          {entries.length > 1 ? (
+            <details>
+              <summary class="row">
+                <span class="name">
+                  <span class="link">{repo}</span>
+                  <svg viewBox="0 0 10 10" aria-hidden="true">
+                    <path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" />
+                  </svg>
+                </span>
+                <span class="title">
+                  {t("{{count}} contributions").replace("{{count}}", () => String(entries.length))}
+                </span>
+                <span class="label">
+                  <span class="dots" aria-hidden="true">
+                    {entries.map((entry) => (
+                      <span data-kind={entry.kind} data-state={"state" in entry ? entry.state : undefined} />
+                    ))}
+                  </span>{" "}
+                  <span class="muted">· {years(entries)}</span>
+                </span>
+              </summary>
+              <ul role="list">
+                {entries.map((entry) => (
+                  <li class="row">
+                    <Contribution contribution={entry} name={"number" in entry ? `#${String(entry.number)}` : repo} />
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ) : (
+            entries.map((entry) => <Contribution contribution={entry} name={repo} />)
+          )}
+        </li>
+      ))
+      .toArray()}
   </ul>
 </Section>
 
 <style>
-  ul {
-    display: grid;
+  .contributions {
     grid-column: 1 / -1;
-    grid-template-columns: subgrid;
+
+    > li {
+      border-top: 1px solid var(--line);
+    }
   }
 
-  li {
+  .row {
     display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
+    grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+    column-gap: var(--gutter);
     row-gap: 0.35rem;
     padding-block: 1.25rem;
-    border-top: 1px solid var(--line);
   }
 
-  .repo,
-  .title,
-  .label {
+  .row > :global(*) {
     grid-column: 1 / -1;
   }
 
-  .repo {
+  .row > :global(.name) {
     font-family: var(--mono);
     font-size: var(--step--1);
   }
 
-  .title {
+  .row > :global(.title) {
     color: var(--muted);
   }
 
+  .row > :global(.title code) {
+    font-size: 0.9em;
+  }
+
   @media (width >= 64rem) {
-    .repo {
+    .row > :global(.name) {
       grid-column: 1 / 5;
     }
 
-    .title {
+    .row > :global(.title) {
       grid-column: 5 / 10;
     }
 
-    .label {
+    .row > :global(.label) {
       grid-column: 10 / -1;
       text-align: end;
+    }
+  }
+
+  details {
+    interpolate-size: allow-keywords;
+
+    &::details-content {
+      block-size: 0;
+      overflow-y: clip;
+      transition:
+        block-size var(--medium) var(--ease),
+        content-visibility var(--medium) allow-discrete;
+    }
+
+    &[open]::details-content {
+      block-size: auto;
+    }
+
+    li {
+      padding-block: 0.75rem;
+      border-top: 1px dashed var(--line);
+    }
+
+    li:last-child {
+      padding-block-end: 1.25rem;
+    }
+  }
+
+  summary {
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:hover .link::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    svg {
+      display: inline-block;
+      width: 0.7em;
+      height: 0.7em;
+      margin-inline-start: 0.35em;
+      vertical-align: 0.05em;
+      transition: rotate var(--medium) var(--ease);
+    }
+  }
+
+  details[open] summary svg {
+    rotate: 180deg;
+  }
+
+  .contributions :global([data-state]) {
+    --state: light-dark(#59636e, #9198a1);
+  }
+
+  .contributions :global([data-state="open"]) {
+    --state: light-dark(#1a7f37, #3fb950);
+  }
+
+  .contributions :global(:is([data-state="merged"], [data-state="resolved"])) {
+    --state: light-dark(#8250df, #ab7df8);
+  }
+
+  .contributions :global([data-kind="pull"][data-state="closed"]) {
+    --state: light-dark(#d1242f, #f85149);
+  }
+
+  .contributions :global(.state) {
+    color: var(--state);
+
+    &::before {
+      content: "";
+      display: inline-block;
+      width: 0.6em;
+      height: 0.6em;
+      margin-inline-end: 0.6em;
+      border-radius: 50%;
+      background: currentColor;
+      vertical-align: 0.05em;
+    }
+  }
+
+  .dots {
+    display: inline-flex;
+    gap: 0.3em;
+    vertical-align: 0.05em;
+
+    > span {
+      width: 0.6em;
+      height: 0.6em;
+      border-radius: 50%;
+      background: var(--state, var(--muted));
     }
   }
 </style>

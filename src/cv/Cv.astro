@@ -2,8 +2,10 @@
 import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from "astro:i18n";
 
 import capabilities from "../capabilities/capabilities";
-import kinds from "../contributions/kinds";
+import contributions from "../contributions/contributions";
+import label from "../contributions/label";
 import when from "../contributions/when";
+import years from "../contributions/years";
 import jobs from "../experience/jobs";
 import period from "../i18n/period";
 import translations from "../i18n/translations";
@@ -125,15 +127,25 @@ const entries = await studies(locale);
         {t("Contributions")}
       </h2>
       <p class="inline">
-        {profile.contributions
-          .filter((contribution) => contribution.kind !== "issue")
-          .map((contribution, index) => (
+        {Map.groupBy(contributions, (contribution) => contribution.repo)
+          .entries()
+          .filter(([, group]) => group.some((entry) => entry.kind !== "issue"))
+          .map(([repo, group], index) => (
             <>
               {index > 0 && " · "}
-              <a href={contribution.url}>{contribution.repo}</a> ({t(kinds[contribution.kind]).toLowerCase()},{" "}
-              {when(contribution, t)})
+              {group.length === 1 && group[0] ? (
+                <>
+                  <a href={group[0].url}>{repo}</a> ({label(group[0], t).toLowerCase()}, {when(group[0], t)})
+                </>
+              ) : (
+                <>
+                  <a href={`https://github.com/${repo}/issues?q=author%3A${profile.handle}`}>{repo}</a> (
+                  {t("{{count}} contributions").replace("{{count}}", () => String(group.length))}, {years(group)})
+                </>
+              )}
             </>
-          ))}
+          ))
+          .toArray()}
       </p>
     </section>
 
@@ -297,6 +309,10 @@ const entries = await studies(locale);
   .inline,
   dd {
     color: var(--muted);
+  }
+
+  .inline a {
+    white-space: nowrap;
   }
 
   dl div {
