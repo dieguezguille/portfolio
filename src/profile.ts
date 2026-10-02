@@ -1,4 +1,4 @@
-// cspell:ignore appkit duongdev kristerkari lifinance reown tamagui
+// cspell:ignore gltfjsx lifinance pmndrs
 export default {
   name: "Guillermo Diéguez",
   handle: "dieguezguille",
@@ -9,17 +9,5 @@ export default {
   country: "AR",
   timezone: "America/Argentina/Buenos_Aires",
   employer: { name: "Exa Labs", url: "https://exactly.app" },
-  contributions: [
-    "https://github.com/exactly/exa",
-    "https://github.com/tamagui/tamagui/pull/4243",
-    "https://github.com/tamagui/tamagui/pull/4242",
-    "https://github.com/tamagui/tamagui/issues/4238",
-    "https://github.com/tamagui/tamagui/issues/4237",
-    "https://github.com/tamagui/tamagui/issues/4236",
-    "https://github.com/tamagui/tamagui/issues/4235",
-    "https://github.com/kristerkari/react-native-svg-transformer/pull/470",
-    "https://github.com/reown-com/appkit-react-native/issues/496",
-    "https://github.com/lifinance/sdk/issues/226",
-    "https://github.com/duongdev/phosphor-react-native/issues/58",
-  ],
+  contributions: { core: ["exactly/exa"], hidden: ["exactly", "lifinance/customized-token-list", "pmndrs/gltfjsx"] },
 };
